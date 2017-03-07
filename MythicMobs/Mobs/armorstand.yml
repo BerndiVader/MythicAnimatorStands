@@ -1,0 +1,7 @@
+animator:
+  Type: armor_stand
+  Options:
+    HasArms: true
+  Skills:
+  - asinit{anim=Example.anim;plate=false} @self ~onSpawn 1
+  - asanimate{anim=Example.anim;r=20;d=0} @self ~onTimer:20 1
