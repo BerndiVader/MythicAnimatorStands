@@ -20,6 +20,8 @@ public class mmArmorStandAnimateMechanic extends SkillMechanic implements ITarge
 		this.repeat = mlc.getInteger(new String[]{"repeat","r"},0);
 		this.delay = mlc.getInteger(new String[]{"delay","d"},0);
 		this.base = mlc.getBoolean(new String[]{"base","plate"},false);
+		this.delay = this.delay>=0?this.delay:0;
+		this.repeat = this.repeat>=0?this.repeat:0;
 	}
 
 	@Override

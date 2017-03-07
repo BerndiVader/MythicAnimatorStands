@@ -91,12 +91,15 @@ public class ArmorStandAnimator {
 	public ArmorStandAnimator(File aniFile, ArmorStand armorStand) {
 		// set all the stuff
 		this.armorStand = armorStand;
+		this.interpolate=true;
 		startLocation = armorStand.getLocation();
 		// checks if the file has been loaded before. If so return the cached version
-		boolean loadall=true;
-//		if (animCache.containsKey(aniFile.getAbsolutePath())) {
-		if (!loadall) {
+		if (animCache.containsKey(aniFile.getAbsolutePath())) {
+			frames = new Frame[animCache.get(aniFile.getAbsolutePath()).length];
 			frames = animCache.get(aniFile.getAbsolutePath());
+			this.length = frames.length;
+			this.currentFrame=0;
+			this.paused=false;
 		} else {
 			// File has not been loaded before so load it.
 			BufferedReader br = null;
@@ -121,9 +124,9 @@ public class ArmorStandAnimator {
 						currentFrame.frameID = frameID;
 					}
 					// check if we need to interpolate
-					else if (line.contains("interpolate")) {
-						interpolate = true;
-					}
+//					else if (line.contains("interpolate")) {
+//						interpolate = true;
+//					}
 					// sets the position and rotation or the main armor stand
 					else if (line.contains("Armorstand_Position")) {
 						currentFrame.x = Float.parseFloat(line.split(" ")[1]);

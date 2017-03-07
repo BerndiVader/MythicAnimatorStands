@@ -10,7 +10,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicConditionLoadEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMechanicLoadEvent;
+import io.lumine.xikage.mythicmobs.skills.SkillCondition;
 import io.lumine.xikage.mythicmobs.skills.SkillMechanic;
 
 public class mmMythicMobsEvents implements Listener {
@@ -30,6 +32,23 @@ public class mmMythicMobsEvents implements Listener {
 		} else if (e.getMechanicName().equals("ASUNLOAD")) {
 			SkillMechanic skill = new mmArmorStandUnloadMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
+		} else if (e.getMechanicName().equals("ASPAUSE")) {
+			SkillMechanic skill = new mmArmorStandPauseMechanic(e.getContainer().getConfigLine(),e.getConfig());
+			e.register(skill);
+		} else if (e.getMechanicName().equals("ASRUN")) {
+			SkillMechanic skill = new mmArmorStandRunMechanic(e.getContainer().getConfigLine(),e.getConfig());
+			e.register(skill);
+		}
+	}
+	
+	@EventHandler
+	public void mmMythicMobsConditionsLoad(MythicConditionLoadEvent e) {
+		if (e.getConditionName().equals("ANIMATESTANDPAUSED")) {
+			SkillCondition condition = new mmArmorStandPauseCondition(e.getConditionName(),e.getConfig());
+			e.register(condition);
+		} else if (e.getConditionName().equals("ISANIMATESTAND")) {
+			SkillCondition condition = new mmArmorStandIsAnimator(e.getConditionName(),e.getConfig());
+			e.register(condition);
 		}
 	}
 

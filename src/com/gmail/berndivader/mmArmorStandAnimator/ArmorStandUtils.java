@@ -13,7 +13,6 @@ import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 public class ArmorStandUtils {
 
 	public static boolean animateArmorStand(AbstractEntity entity, String animFile, int repeat, int delay, boolean base) {
-		
 		if (entity.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) {
 			ArmorStand as = (ArmorStand)entity.getBukkitEntity();
 			ArmorStand a=null;
@@ -51,6 +50,7 @@ public class ArmorStandUtils {
 	}
 
 	public static boolean initArmorStandAnim(AbstractEntity target, String file, boolean base) {
+		if (!target.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) return false;
 		ArmorStand as = (ArmorStand)target.getBukkitEntity();
 		ArmorStandAnimator asa=null;
 		ArmorStand a=null;
@@ -78,8 +78,50 @@ public class ArmorStandUtils {
 		}
 		return true;
 	}
+	
+	public static boolean startArmorStandAnimation(AbstractEntity entity) {
+		ArmorStandAnimator asa = getAnimatorInstance(entity);
+		if (asa!=null) {
+			asa.play();
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean pauseArmorStandAnimation(AbstractEntity entity) {
+		ArmorStandAnimator asa = getAnimatorInstance(entity);
+		if (asa!=null) {
+			asa.pause();
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isArmorStandAnimation(AbstractEntity entity) {
+		ArmorStandAnimator asa = getAnimatorInstance(entity);
+		return asa!=null;
+	}
 
 	public static boolean unloadArmorStandAnimation(AbstractEntity entity) {
+		ArmorStandAnimator asa = getAnimatorInstance(entity);
+		if (asa!=null) {
+			asa.stop();
+			asa.remove();
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isAnimationPaused(AbstractEntity entity) {
+		ArmorStandAnimator asa = getAnimatorInstance(entity);
+		if (asa!=null) {
+			return asa.isPaused();
+		}
+		return false;
+	}
+	
+	private static ArmorStandAnimator getAnimatorInstance(AbstractEntity entity) {
+		if (!entity.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) return null;
 		ArmorStand as = (ArmorStand)entity.getBukkitEntity();
 		ArmorStandAnimator asa=null;
 		Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator();
@@ -92,12 +134,7 @@ public class ArmorStandUtils {
 				break;
 			}
 		}
-		if (match) {
-			asa.stop();
-			asa.remove();
-			return true;
-		}
-		return false;
+		return match?asa:null;
 	}
-	
+
 }
