@@ -6,11 +6,10 @@ Stop your server and copy the mmArmorStandAnimator.jar file into your plugins fo
 
 ### Usage?
 1. You need an MythicMobs with the type of armor_stand. How to setup an armor_stand MythicMobs look here: http://www.mythicmobs.net/manual/doku.php/databases/mobs/options#armor_stands
-#####
 2. You need atleast one animation that you can apply to your mob. You find one example in the folder "MythicMobs/Anims/" This is btw the folder where all your animations should be stored.
-#####
 3. Setup the skills to make the MythicMobs an AnimateStand:
-######
+
+
 ###Init the MythicMob:
 The first thing to do is, initialize the MythicMobs as an AnimateStand. This can be done with the skill 
 ```
