@@ -24,7 +24,7 @@ This skill will setup the AnimateStand and assign the animation "Example.anim" t
 ```
   - asAnimate{anim=Example.anim;r=20;d=0;plate=false} @self ~onTimer:20 1
 ```
-This skill will now play the animation Example.anim for (r=20) 20 times with a delay of (d=0) 0 ticks. There is an ~onTimer:20 1 trigger which will restart the skill again. The AnimateStand timer should not last longer than the MythicMobs timer. It was nessercary for an buildin Timer because MythicMobs clocks only ticks every 4 ticks. This might be a bit to slow for the animations.
+This skill will now play the animation Example.anim for (r=20) 20 times with a delay of (d=0) 0 ticks per frame. There is an ~onTimer:20 1 trigger which will restart the skill again. The AnimateStand timer should not last longer than the MythicMobs timer. It was nessercary for an buildin Timer because MythicMobs clocks only ticks every 4 ticks. This might be a bit to slow for the animations.
 ###### anim or a: again the name of the animation.
 ###### r or repeat: how many times should the animation repeat.
 ###### d or delay: how fast the animation should be played. where 0 is every tick.
