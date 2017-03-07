@@ -14,8 +14,8 @@ public class main extends JavaPlugin {
 	public void onEnable() {
 		setPlugin(this);
 		if (getServer().getPluginManager().isPluginEnabled("MythicMobs")) {
-			strMMVer = Bukkit.getServer().getPluginManager().getPlugin("MythicMobs").getDescription().getVersion();
-			mmVer = Integer.valueOf(strMMVer.replaceAll("\\.", ""));
+	    	strMMVer = Bukkit.getServer().getPluginManager().getPlugin("MythicMobs").getDescription().getVersion().replaceAll("[\\D]", "");
+			mmVer = Integer.valueOf(strMMVer);
 			if (mmVer < 400) {
 				getLogger().warning("MythicMobs Version not supported.");
 				getPluginLoader().disablePlugin(main.plugin);
