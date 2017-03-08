@@ -59,7 +59,21 @@ animator:
   Type: armor_stand
   Options:
     HasArms: true
+    ItemBody: COS_GreenChest
+    ItemFeet: COS_BlueFeet
+    ItemHand: COS_IronSword
+    ItemHead: BlackbeardHead
+    ItemLegs: COS_YellowLegs
+  Riding: Rudolf
   Skills:
-  - asinit{anim=Example.anim;plate=false} @self ~onSpawn 1
+  - asinit{anim=Example.anim} @self ~onSpawn 1
   - asanimate{anim=Example.anim;r=20;d=0} @self ~onTimer:20 1
+  
+Rudolf:
+  Mobtype: rabbit
+  Options:
+    MovementSpeed: 0.1
+    PreventRenaming: true
+  Skills:
+  - potion{type=INVISIBILITY;duration=4000;level=1} @self ~onSpawn 1
 ```

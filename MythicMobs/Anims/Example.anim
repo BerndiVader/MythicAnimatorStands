@@ -1,8 +1,13 @@
-interpolate         //This tells the class to interpolate. If you remove this it'll just be jumpy.
-length 24           //This tells the class how many frames you have (not key frames, but the actual frames).
-frame 0             //This tells the class what frame you are setting right now. YOU HAVE TO START AT 0.
-Armorstand_Position 0.0 0.0 0.0 0.0     //This is the main position. X Y Z R (R is the yaw value)
-Armorstand_Middle -0.5 -8 4    //Rotation for different body parts in degrees
+#This tells the class to interpolate. If you remove this it'll just be jumpy.
+interpolate         
+#This tells the class how many frames you have (not key frames, but the actual frames).
+length 24
+#This tells the class what frame you are setting right now. YOU HAVE TO START AT 0.
+frame 0             
+#This is the main position. X Y Z R (R is the yaw value)
+Armorstand_Position 0.0 0.0 0.0 0.0     
+Armorstand_Middle -0.5 -8 4    
+#Rotation for different body parts in degrees
 Armorstand_Right_Leg 40 0 0
 Armorstand_Left_Leg -40 0 0
 Armorstand_Left_Arm 40 0 0
