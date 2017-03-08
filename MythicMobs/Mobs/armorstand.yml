@@ -1,4 +1,44 @@
-animator:
+hampelmann:
+  Type: armor_stand
+  Options:
+    HasArms: true
+    ItemBody: COS_GreenChest
+    ItemFeet: COS_BlueFeet
+    ItemHand: COS_IronSword
+    ItemHead: BlackbeardHead
+    ItemLegs: COS_YellowLegs
+  Skills:
+  - asinit{anim=Example2.anim} @self ~onSpawn 1
+  - asanimate{anim=Example2.anim;r=20;d=0} @self ~onTimer:20 1
+  
+flipmann:
+  Type: armor_stand
+  Options:
+    HasArms: true
+    ItemBody: COS_GreenChest
+    ItemFeet: COS_BlueFeet
+    ItemHand: COS_IronSword
+    ItemHead: BlackbeardHead
+    ItemLegs: COS_YellowLegs
+  Skills:
+  - asinit{anim=flip.anim} @self ~onSpawn 1
+  - asanimate{anim=flip.anim;r=20;d=0} @self ~onTimer:20 1
+  
+moonwalker:
+  Type: armor_stand
+  Options:
+    HasArms: true
+    ItemBody: COS_GreenChest
+    ItemFeet: COS_BlueFeet
+    ItemHand: COS_IronSword
+    ItemHead: BlackbeardHead
+    ItemLegs: COS_YellowLegs
+#  Riding: Rudolf
+  Skills:
+  - asinit{anim=Example1.anim} @self ~onSpawn 1
+  - asanimate{anim=Example.anim;r=20;d=0} @self ~onTimer:20 1
+
+walker:
   Type: armor_stand
   Options:
     HasArms: true
@@ -9,7 +49,7 @@ animator:
     ItemLegs: COS_YellowLegs
   Riding: Rudolf
   Skills:
-  - asinit{anim=Example.anim} @self ~onSpawn 1
+  - asinit{anim=Example1.anim} @self ~onSpawn 1
   - asanimate{anim=Example.anim;r=20;d=0} @self ~onTimer:20 1
   
 Rudolf:
