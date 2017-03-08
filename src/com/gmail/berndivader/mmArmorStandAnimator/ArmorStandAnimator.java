@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.util.EulerAngle;
 
 /**
@@ -80,7 +81,7 @@ public class ArmorStandAnimator {
 	/** The start location of the animation */
 	private Location startLocation;
 	/** If this is true. The animator is going to guess the frames that aren't specified */
-	private boolean interpolate = false;
+	private boolean interpolate = true;
 
 	/**
 	 * Constructor of the animator. Takes in the path to the file with the animation and the armor stand to animate.
@@ -91,7 +92,6 @@ public class ArmorStandAnimator {
 	public ArmorStandAnimator(File aniFile, ArmorStand armorStand) {
 		// set all the stuff
 		this.armorStand = armorStand;
-		this.interpolate=true;
 		startLocation = armorStand.getLocation();
 		// checks if the file has been loaded before. If so return the cached version
 		if (animCache.containsKey(aniFile.getAbsolutePath())) {
@@ -123,10 +123,6 @@ public class ArmorStandAnimator {
 						currentFrame = new Frame();
 						currentFrame.frameID = frameID;
 					}
-					// check if we need to interpolate
-//					else if (line.contains("interpolate")) {
-//						interpolate = true;
-//					}
 					// sets the position and rotation or the main armor stand
 					else if (line.contains("Armorstand_Position")) {
 						currentFrame.x = Float.parseFloat(line.split(" ")[1]);
@@ -238,18 +234,17 @@ public class ArmorStandAnimator {
 			// get the frame
 			Frame f = frames[currentFrame];
 			//checks if we need to interpolate. If so interpolate.
-			if(interpolate) {
-				if(f == null) {
-					f = interpolate(currentFrame);
-				}
-			}
+			if(f == null) f = interpolate(currentFrame);
 			// make sure it's not null
 			if (f != null) {
 				// get the new location
 				Location newLoc = startLocation.clone().add(f.x, f.y, f.z);
 				newLoc.setYaw(f.r + newLoc.getYaw());
 				// set all the values
-				armorStand.teleport(newLoc);
+				Entity e = armorStand;
+				if (e.getVehicle()==null) {
+					armorStand.teleport(newLoc);
+				}
 				armorStand.setBodyPose(f.middle);
 				armorStand.setLeftLegPose(f.leftLeg);
 				armorStand.setRightLegPose(f.rightLeg);
@@ -303,7 +298,7 @@ public class ArmorStandAnimator {
 	 * @param location
 	 */
 	public void setStartLocation(Location location) {
-		startLocation = location;
+		if (this.armorStand.getVehicle()==null) startLocation = location;
 	}
 
 	/** Returns interpolate */
@@ -355,9 +350,7 @@ public class ArmorStandAnimator {
 		float Dmin = frameID - minFrame.frameID;
 		float D = maxFrame.frameID - minFrame.frameID;
 		float D0 = Dmin / D;
-		
 		res = minFrame.mult(1 - D0, frameID).add(maxFrame.mult(D0, frameID), frameID);
-
 		return res;
 	}
 
@@ -419,5 +412,4 @@ public class ArmorStandAnimator {
 			return f;
 		}
 	}
-
 }

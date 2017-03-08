@@ -3,6 +3,7 @@ package com.gmail.berndivader.mmArmorStandAnimator;
 import java.io.File;
 import java.util.Iterator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -33,7 +34,7 @@ public class ArmorStandUtils {
 	        		int r = repeat;
 	        		public void run() {
 	        			if (r!=-1) {
-	        				aa.setStartLocation(as.getLocation());
+        					aa.setStartLocation(as.getLocation());
 	        				aa.update();
 	        				r--;
 	        			} else {
@@ -65,6 +66,7 @@ public class ArmorStandUtils {
 			}
 		}
 		if (match) {
+			Bukkit.getLogger().info("init asa");
 			asa.stop();
 			asa.remove();
 		}

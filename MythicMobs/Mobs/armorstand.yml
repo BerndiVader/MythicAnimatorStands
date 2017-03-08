@@ -2,6 +2,15 @@ animator:
   Type: armor_stand
   Options:
     HasArms: true
+  Riding: Rudolf
   Skills:
-  - asinit{anim=Example.anim;plate=false} @self ~onSpawn 1
+  - asinit{anim=Example.anim;plate=true} @self ~onSpawn 1
   - asanimate{anim=Example.anim;r=20;d=0} @self ~onTimer:20 1
+Rudolf:
+  Mobtype: endermite
+  Options:
+    MaxCombatDistance: 10
+    FollowRange: 30
+    MovementSpeed: .28
+    PreventRenaming: true
+    Invisible: true
