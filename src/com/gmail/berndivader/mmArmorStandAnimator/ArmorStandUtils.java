@@ -53,6 +53,7 @@ public class ArmorStandUtils {
 	public static boolean initArmorStandAnim(AbstractEntity target, String file, boolean base) {
 		if (!target.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) return false;
 		ArmorStand as = (ArmorStand)target.getBukkitEntity();
+		as.setAI(false);
 		ArmorStandAnimator asa=null;
 		ArmorStand a=null;
 		boolean match=false;

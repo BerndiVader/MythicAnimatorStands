@@ -13,6 +13,8 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.EulerAngle;
 
+import com.gmail.berndivader.mmArmorStandAnimator.NMS.NMSUtils;
+
 /**
  * The original thread that this code belongs to can be found here:
  * https://www.spigotmc.org/threads/armor-stand-animator-class.152863/
@@ -41,6 +43,9 @@ SOFTWARE.
  *
  */
 public class ArmorStandAnimator {
+
+	
+	private static NMSUtils nmsutils = main.NMSUtils();
 
 	/**
 	 * This is a map containing the already loaded frames. This way we don't have to parse the same animation over and over.
@@ -237,14 +242,18 @@ public class ArmorStandAnimator {
 			if(f == null) f = interpolate(currentFrame);
 			// make sure it's not null
 			if (f != null) {
+				// get Entity instance for vehicle check
+				Entity e = (Entity)armorStand;
 				// get the new location
 				Location newLoc = startLocation.clone().add(f.x, f.y, f.z);
 				newLoc.setYaw(f.r + newLoc.getYaw());
-				// set all the values
-				Entity e = armorStand;
+				// check for vehicle
 				if (e.getVehicle()==null) {
 					armorStand.teleport(newLoc);
+				} else {
+					nmsutils.setRotation(e, e.getVehicle().getLocation().getYaw()+f.r, e.getVehicle().getLocation().getPitch());
 				}
+				// set all the values
 				armorStand.setBodyPose(f.middle);
 				armorStand.setLeftLegPose(f.leftLeg);
 				armorStand.setRightLegPose(f.rightLeg);
@@ -298,7 +307,11 @@ public class ArmorStandAnimator {
 	 * @param location
 	 */
 	public void setStartLocation(Location location) {
-		if (this.armorStand.getVehicle()==null) startLocation = location;
+		if (this.armorStand.getVehicle()==null) {
+			startLocation = location;
+		} else {
+			startLocation = this.armorStand.getVehicle().getLocation();
+		}
 	}
 
 	/** Returns interpolate */
