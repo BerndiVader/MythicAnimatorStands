@@ -1,0 +1,7 @@
+# for your mobs to equip or drop.
+BlackbeardHead:
+  Id: 397
+  Data: 3
+  Options:
+    Player: JackSparrow
+
