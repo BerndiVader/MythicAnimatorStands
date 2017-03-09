@@ -243,13 +243,14 @@ public class ArmorStandAnimator {
 			// make sure it's not null
 			if (f != null) {
 				// get Entity instance for vehicle check
-				Entity e = (Entity)armorStand;
-				// get the new location
-				Location newLoc = startLocation.clone().add(f.x, f.y, f.z);
-				newLoc.setYaw(f.r + newLoc.getYaw());
+				Entity e = armorStand;
 				// check for vehicle
 				if (e.getVehicle()==null) {
-					armorStand.teleport(newLoc);
+					// get the new location
+					Location newLoc = startLocation.clone().add(f.x, f.y, f.z);
+					newLoc.setYaw(f.r + newLoc.getYaw());
+					newLoc.setPitch(f.r + newLoc.getPitch());
+					e.teleport(newLoc);
 				} else {
 					nmsutils.setRotation(e, e.getVehicle().getLocation().getYaw()+f.r, e.getVehicle().getLocation().getPitch());
 				}
@@ -374,7 +375,7 @@ public class ArmorStandAnimator {
 		/**The Frame ID*/
 		int frameID;
 		/**the location and rotation*/
-		float x, y, z, r;
+		float x, y, z, r, p;
 		/**The rotation of the body parts*/
 		EulerAngle middle;
 		EulerAngle rightLeg;

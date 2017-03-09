@@ -36,7 +36,7 @@ moonwalker:
 #  Riding: Rudolf
   Skills:
   - asinit{anim=Example1.anim} @self ~onSpawn 1
-  - asanimate{anim=Example.anim;r=20;d=0} @self ~onTimer:20 1
+  - asanimate{anim=Example1.anim;r=20;d=0} @self ~onTimer:20 1
 
 walker:
   Type: armor_stand
@@ -50,7 +50,7 @@ walker:
   Riding: Rudolf
   Skills:
   - asinit{anim=Example1.anim} @self ~onSpawn 1
-  - asanimate{anim=Example.anim;r=20;d=0} @self ~onTimer:20 1
+  - asanimate{anim=Example1.anim;r=20;d=0} @self ~onTimer:20 1
   
 Rudolf:
   Mobtype: rabbit
