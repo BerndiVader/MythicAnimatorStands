@@ -89,6 +89,7 @@ public class ArmorStandAnimator {
 	private boolean interpolate = true;
 	/** If this is true. The values of the frames will be negated. */
 	private boolean negated = false;
+	/** If this is set. The values adjust the world position of the armorstand. */
 
 	/**
 	 * Constructor of the animator. Takes in the path to the file with the animation and the armor stand to animate.
@@ -107,6 +108,7 @@ public class ArmorStandAnimator {
 			this.length = frames.length;
 			this.currentFrame=0;
 			this.paused=false;
+			this.negated=false;
 		} else {
 			// File has not been loaded before so load it.
 			BufferedReader br = null;
@@ -120,7 +122,7 @@ public class ArmorStandAnimator {
 					if (line.startsWith("length")) {
 						length = (int) Float.parseFloat(line.split(" ")[1]);
 						frames = new Frame[length];
-					} else if (line.startsWith("negate")) {
+					} else if (line.startsWith("Animate_Negate")) {
 						this.negated = true;
 					}
 					// sets the current frame
@@ -144,7 +146,9 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
-						if (this.negated) x=-x;y=-y;z=-z;
+						if (this.negated) {
+							x=-x;y=-y;z=-z;
+						}
 						currentFrame.middle = new EulerAngle(x, y, z);
 					}
 					// sets the rotation for the right leg
@@ -152,7 +156,9 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
-						if (this.negated) x=-x;y=-y;z=-z;
+						if (this.negated) {
+							x=-x;y=-y;z=-z;
+						}
 						currentFrame.rightLeg = new EulerAngle(x, y, z);
 					}
 					// sets the rotation for the left leg
@@ -160,7 +166,9 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
-						if (this.negated) x=-x;y=-y;z=-z;
+						if (this.negated) {
+							x=-x;y=-y;z=-z;
+						}
 						currentFrame.leftLeg = new EulerAngle(x, y, z);
 					}
 					// sets the rotation for the left arm
@@ -168,7 +176,9 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
-						if (this.negated) x=-x;y=-y;z=-z;
+						if (this.negated) {
+							x=-x;y=-y;z=-z;
+						}
 						currentFrame.leftArm = new EulerAngle(x, y, z);
 					}
 					// sets the rotation for the right arm
@@ -176,7 +186,9 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
-						if (this.negated) x=-x;y=-y;z=-z;
+						if (this.negated) {
+							x=-x;y=-y;z=-z;
+						}
 						currentFrame.rightArm = new EulerAngle(x, y, z);
 					}
 					// sets the rotation for the head
@@ -184,7 +196,9 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
-						if (this.negated) x=-x;y=-y;z=-z;
+						if (this.negated) {
+							x=-x;y=-y;z=-z;
+						}
 						currentFrame.head = new EulerAngle(x, y, z);
 					}
 				}
@@ -262,7 +276,12 @@ public class ArmorStandAnimator {
 					newLoc.setPitch(f.r + newLoc.getPitch());
 					e.teleport(newLoc);
 				} else {
-					nmsutils.setRotation(e, e.getVehicle().getLocation().getYaw()+f.r, e.getVehicle().getLocation().getPitch());
+					double xx,yy,zz;
+					xx = e.getVehicle().getLocation().getX();
+					yy = e.getVehicle().getLocation().getY();
+					zz = e.getVehicle().getLocation().getZ();
+//					nmsutils.setRotation(e.getVehicle(), e.getVehicle().getLocation().getYaw()+f.r, e.getVehicle().getLocation().getPitch());
+					nmsutils.SetNMSLocation(e.getVehicle(), xx, yy, zz, e.getVehicle().getLocation().getYaw()+f.r, e.getVehicle().getLocation().getPitch());
 				}
 				// set all the values
 				armorStand.setBodyPose(f.middle);
@@ -321,7 +340,7 @@ public class ArmorStandAnimator {
 		if (this.armorStand.getVehicle()==null) {
 			startLocation = location;
 		} else {
-			startLocation = this.armorStand.getVehicle().getLocation();
+			startLocation = this.armorStand.getVehicle().getLocation().clone();
 		}
 	}
 

@@ -1224,6 +1224,17 @@ public class NMSUtil18 implements NMSUtils {
     		ex.printStackTrace();
     	}
     }
+    
+    @Override
+    public void SetNMSLocation(Entity e, double x, double y, double z, float r, float p) {
+    	try {
+        	Object entityHandle = getHandle(e);
+        	class_Entity_setLocationMethod.invoke(entityHandle, x, y, z, r, p);
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+    }
+    
 
     public static void setEnvironment(World world, World.Environment environment) {
         try {
