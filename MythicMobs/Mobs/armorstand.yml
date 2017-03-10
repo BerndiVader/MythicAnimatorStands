@@ -1,3 +1,16 @@
+winkemann:
+  Type: armor_stand
+  Options:
+    HasArms: true
+    ItemBody: COS_GreenChest
+    ItemFeet: COS_BlueFeet
+    ItemHand: COS_IronSword
+    ItemHead: BlackbeardHead
+    ItemLegs: COS_YellowLegs
+  Skills:
+  - asinit{anim=winke.anim} @self ~onSpawn 1
+  - asanimate{anim=winke.anim;r=20;d=0} @self ~onTimer:20 1
+
 hampelmann:
   Type: armor_stand
   Options:

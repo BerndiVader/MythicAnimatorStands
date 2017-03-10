@@ -3,6 +3,7 @@ package com.gmail.berndivader.mmArmorStandAnimator;
 import java.io.File;
 import java.util.Iterator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -42,9 +43,8 @@ public class ArmorStandUtils {
 	                } 
 	            }.runTaskTimer(main.inst(), 0, delay);
 				return true;
-			} else {
-				if (initArmorStandAnim(entity, animFile, base)) return true;
 			}
+			return initArmorStandAnim(entity, animFile, base);
 		}
 		return false;
 	}
@@ -75,6 +75,7 @@ public class ArmorStandUtils {
 			asa.setStartLocation(as.getLocation());
 			as.setBasePlate(false);
 		} catch (Exception e) {
+			Bukkit.getLogger().warning("Could not load animation: " + file);
 			return false;
 		}
 		return true;
@@ -137,5 +138,4 @@ public class ArmorStandUtils {
 		}
 		return match?asa:null;
 	}
-
 }
