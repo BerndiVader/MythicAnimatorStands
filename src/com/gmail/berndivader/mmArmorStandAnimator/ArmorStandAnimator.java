@@ -87,6 +87,8 @@ public class ArmorStandAnimator {
 	private Location startLocation;
 	/** If this is true. The animator is going to guess the frames that aren't specified */
 	private boolean interpolate = true;
+	/** If this is true. The values of the frames will be negated. */
+	private boolean negated = false;
 
 	/**
 	 * Constructor of the animator. Takes in the path to the file with the animation and the armor stand to animate.
@@ -118,6 +120,8 @@ public class ArmorStandAnimator {
 					if (line.startsWith("length")) {
 						length = (int) Float.parseFloat(line.split(" ")[1]);
 						frames = new Frame[length];
+					} else if (line.startsWith("negate")) {
+						this.negated = true;
 					}
 					// sets the current frame
 					else if (line.startsWith("frame")) {
@@ -140,6 +144,7 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
+						if (this.negated) x=-x;y=-y;z=-z;
 						currentFrame.middle = new EulerAngle(x, y, z);
 					}
 					// sets the rotation for the right leg
@@ -147,6 +152,7 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
+						if (this.negated) x=-x;y=-y;z=-z;
 						currentFrame.rightLeg = new EulerAngle(x, y, z);
 					}
 					// sets the rotation for the left leg
@@ -154,6 +160,7 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
+						if (this.negated) x=-x;y=-y;z=-z;
 						currentFrame.leftLeg = new EulerAngle(x, y, z);
 					}
 					// sets the rotation for the left arm
@@ -161,6 +168,7 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
+						if (this.negated) x=-x;y=-y;z=-z;
 						currentFrame.leftArm = new EulerAngle(x, y, z);
 					}
 					// sets the rotation for the right arm
@@ -168,6 +176,7 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
+						if (this.negated) x=-x;y=-y;z=-z;
 						currentFrame.rightArm = new EulerAngle(x, y, z);
 					}
 					// sets the rotation for the head
@@ -175,6 +184,7 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
+						if (this.negated) x=-x;y=-y;z=-z;
 						currentFrame.head = new EulerAngle(x, y, z);
 					}
 				}

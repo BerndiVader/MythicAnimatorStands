@@ -1,6 +1,8 @@
 # AnimateStands 4 MythicMobs
 build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires MythicMobs 4.0.0 or higher
 
+*** 10.3.2017 update: added negate option for anim files. If this is set all positions of the armorstand (expect the World Position itself) will be negated. For compatibility with some animation programs.
+
 ### How to install?
 Stop your server and copy the mmArmorStandAnimator.jar file into your plugins folder. After that restart the server.
 
