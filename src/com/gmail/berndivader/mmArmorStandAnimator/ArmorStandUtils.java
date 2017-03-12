@@ -13,8 +13,10 @@ import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 
 public class ArmorStandUtils {
 
-	public static boolean animateArmorStand(AbstractEntity entity, String animFile, int repeat, int delay, boolean base) {
+	public static boolean animateArmorStand(AbstractEntity entity, String animFile, int repeat, int delay, boolean base, Object oi, Object mobtype) {
 		if (entity.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) {
+			boolean autoInit=false;
+			if (oi!=null) autoInit = (Boolean) oi;
 			ArmorStand as = (ArmorStand)entity.getBukkitEntity();
 			ArmorStand a=null;
 			ArmorStandAnimator asa=null;
@@ -43,16 +45,16 @@ public class ArmorStandUtils {
 	                } 
 	            }.runTaskTimer(main.inst(), 0, delay);
 				return true;
+			} else if (autoInit) {
+				return initArmorStandAnim(entity, animFile, base, oi, mobtype);
 			}
-			return initArmorStandAnim(entity, animFile, base);
 		}
 		return false;
 	}
-
-	public static boolean initArmorStandAnim(AbstractEntity target, String file, boolean base) {
+	
+	public static boolean initArmorStandAnim(AbstractEntity target, String file, boolean base, Object oi, Object mobtype) {
 		if (!target.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) return false;
 		ArmorStand as = (ArmorStand)target.getBukkitEntity();
-		as.setAI(false);
 		ArmorStandAnimator asa=null;
 		ArmorStand a=null;
 		boolean match=false;
@@ -71,9 +73,9 @@ public class ArmorStandUtils {
 		}
 		try {
 			File f = new File(MythicMobs.inst().getDataFolder()+"\\Anims", file);
-			asa = new ArmorStandAnimator(f, as);
+			asa = new ArmorStandAnimator(f, as, oi, mobtype);
 			asa.setStartLocation(as.getLocation());
-			as.setBasePlate(false);
+			as.setBasePlate(base);
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("Could not load animation: " + file);
 			return false;

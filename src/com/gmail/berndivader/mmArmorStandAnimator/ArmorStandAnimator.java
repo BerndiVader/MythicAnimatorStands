@@ -89,7 +89,9 @@ public class ArmorStandAnimator {
 	private boolean interpolate = true;
 	/** If this is true. The values of the frames will be negated. */
 	private boolean negated = false;
-	/** If this is set. The values adjust the world position of the armorstand. */
+	/** If true the ArmorStand will auto init the animator again if its destroyed. */
+	private boolean autoInit = false;
+	private String MythicMobType;
 
 	/**
 	 * Constructor of the animator. Takes in the path to the file with the animation and the armor stand to animate.
@@ -97,14 +99,18 @@ public class ArmorStandAnimator {
 	 * @param aniFile
 	 * @param armorStand
 	 */
-	public ArmorStandAnimator(File aniFile, ArmorStand armorStand) {
+	public ArmorStandAnimator(File aniFile, ArmorStand armorStand, Object oi, Object mobtype) {
 		// set all the stuff
 		this.armorStand = armorStand;
 		startLocation = armorStand.getLocation();
+		if (oi!=null) this.autoInit = (Boolean)oi;
+		if (mobtype!=null) this.MythicMobType = (String)mobtype;
 		// checks if the file has been loaded before. If so return the cached version
 		if (animCache.containsKey(aniFile.getAbsolutePath())) {
 			frames = new Frame[animCache.get(aniFile.getAbsolutePath()).length];
 			frames = animCache.get(aniFile.getAbsolutePath());
+			this.autoInit = frames[0].autoInit;
+			this.MythicMobType = frames[0].MythicMobType;
 			this.length = frames.length;
 			this.currentFrame=0;
 			this.paused=false;
@@ -124,6 +130,10 @@ public class ArmorStandAnimator {
 						frames = new Frame[length];
 					} else if (line.startsWith("Animate_Negate")) {
 						this.negated = true;
+					} else if (line.startsWith("Animator_Auto_Init")) {
+						this.autoInit = true;
+					} else if (line.startsWith("MythicMob_Parent_Type")) {
+						this.MythicMobType = line.split(" ")[1];
 					}
 					// sets the current frame
 					else if (line.startsWith("frame")) {
@@ -218,6 +228,8 @@ public class ArmorStandAnimator {
 				}
 			}
 			// add the animation to the cache, else adding the whole cache thing has no point.
+			frames[0].autoInit=this.autoInit;
+			frames[0].MythicMobType = this.MythicMobType;
 			animCache.put(aniFile.getAbsolutePath(), frames);
 		}
 		// register this instance of the animator
@@ -403,6 +415,10 @@ public class ArmorStandAnimator {
 	public static class Frame {
 		/**The Frame ID*/
 		int frameID;
+		//Summon_Parent_To_Follow
+		String MythicMobType;
+		//AutoInit after AnimatorInstance destroyed
+		boolean autoInit;
 		/**the location and rotation*/
 		float x, y, z, r, p;
 		/**The rotation of the body parts*/

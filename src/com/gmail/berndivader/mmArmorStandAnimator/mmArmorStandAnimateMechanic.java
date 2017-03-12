@@ -26,11 +26,11 @@ public class mmArmorStandAnimateMechanic extends SkillMechanic implements ITarge
 
 	@Override
 	public boolean cast(SkillMetadata data) {
-		return ArmorStandUtils.animateArmorStand(data.getCaster().getEntity(),this.animFile, this.repeat, this.delay, this.base);
+		return ArmorStandUtils.animateArmorStand(data.getCaster().getEntity(),this.animFile, this.repeat, this.delay, this.base, null, null);
 	}
 
 	@Override
 	public boolean castAtEntity(SkillMetadata data, AbstractEntity target) {
-		return ArmorStandUtils.animateArmorStand(target, this.animFile, this.repeat, this.delay, this.base);
+		return ArmorStandUtils.animateArmorStand(target, this.animFile, this.repeat, this.delay, this.base, null, null);
 	}
 }
