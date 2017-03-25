@@ -419,7 +419,7 @@ public class ArmorStandAnimator {
 		String MythicMobType;
 		//AutoInit after AnimatorInstance destroyed
 		boolean autoInit;
-		/**the location and rotation*/
+		/**the location and rotation and pitch*/
 		float x, y, z, r, p;
 		/**The rotation of the body parts*/
 		EulerAngle middle;

@@ -14,7 +14,7 @@ public class mmArmorStandIsAnimator extends SkillCondition implements IEntityCon
 	}
 
 	@Override
-	public boolean check(AbstractEntity entity) {
-		return ArmorStandUtils.isArmorStandAnimation(entity);
+	public boolean check(AbstractEntity target) {
+		return ArmorStandUtils.isArmorStandAnimation(target);
 	}
 }

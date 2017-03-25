@@ -23,19 +23,19 @@ public class mmMythicMobsEvents implements Listener {
 	
 	@EventHandler
 	public void mmMythicMobsMechanicsLoad(MythicMechanicLoadEvent e) {
-		if (e.getMechanicName().equals("ASANIMATE")) {
+		if (e.getMechanicName().toUpperCase().equals("ASANIMATE")) {
 			SkillMechanic skill = new mmArmorStandAnimateMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-		} else if (e.getMechanicName().equals("ASINIT")) {
+		} else if (e.getMechanicName().toUpperCase().equals("ASINIT")) {
 			SkillMechanic skill = new mmArmorStandInitMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-		} else if (e.getMechanicName().equals("ASUNLOAD")) {
+		} else if (e.getMechanicName().toUpperCase().equals("ASUNLOAD")) {
 			SkillMechanic skill = new mmArmorStandUnloadMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-		} else if (e.getMechanicName().equals("ASPAUSE")) {
+		} else if (e.getMechanicName().toUpperCase().equals("ASPAUSE")) {
 			SkillMechanic skill = new mmArmorStandPauseMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-		} else if (e.getMechanicName().equals("ASRUN")) {
+		} else if (e.getMechanicName().toUpperCase().equals("ASRUN")) {
 			SkillMechanic skill = new mmArmorStandRunMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
 		}
@@ -43,10 +43,10 @@ public class mmMythicMobsEvents implements Listener {
 	
 	@EventHandler
 	public void mmMythicMobsConditionsLoad(MythicConditionLoadEvent e) {
-		if (e.getConditionName().equals("ANIMATESTANDPAUSED")) {
+		if (e.getConditionName().toUpperCase().equals("ANIMATESTANDPAUSED")) {
 			SkillCondition condition = new mmArmorStandPauseCondition(e.getConditionName(),e.getConfig());
 			e.register(condition);
-		} else if (e.getConditionName().equals("ISANIMATESTAND")) {
+		} else if (e.getConditionName().toUpperCase().equals("ISANIMATESTAND")) {
 			SkillCondition condition = new mmArmorStandIsAnimator(e.getConditionName(),e.getConfig());
 			e.register(condition);
 		}
