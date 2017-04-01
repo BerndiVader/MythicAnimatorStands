@@ -2,6 +2,7 @@ package com.gmail.berndivader.mmArmorStandAnimator;
 
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.skills.INoTargetSkill;
 import io.lumine.xikage.mythicmobs.skills.ITargetedEntitySkill;
 import io.lumine.xikage.mythicmobs.skills.SkillMechanic;
@@ -23,11 +24,14 @@ public class mmArmorStandInitMechanic extends SkillMechanic implements INoTarget
 
 	@Override
 	public boolean castAtEntity(SkillMetadata data, AbstractEntity target) {
-		return ArmorStandUtils.initArmorStandAnim(target, this.animFile, this.base, this.oi, this.mobtype);
+		if (!(data.getCaster() instanceof ActiveMob)) return false;
+		ActiveMob am = (ActiveMob) data.getCaster();
+		return ArmorStandUtils.initArmorStandAnim(am, this.animFile, this.base, this.oi, this.mobtype);
 	}
 
 	@Override
 	public boolean cast(SkillMetadata data) {
-		return ArmorStandUtils.initArmorStandAnim(data.getCaster().getEntity(), this.animFile, this.base, this.oi, this.mobtype);
+		
+		return ArmorStandUtils.initArmorStandAnim((ActiveMob)data.getCaster(), this.animFile, this.base, this.oi, this.mobtype);
 	}
 }

@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -14,6 +15,20 @@ import org.bukkit.entity.Entity;
 import org.bukkit.util.EulerAngle;
 
 import com.gmail.berndivader.mmArmorStandAnimator.NMS.NMSUtils;
+
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import io.lumine.xikage.mythicmobs.skills.AbstractSkill;
+import io.lumine.xikage.mythicmobs.skills.Skill;
+import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
+import io.lumine.xikage.mythicmobs.skills.SkillTargeter;
+import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
+import io.lumine.xikage.mythicmobs.skills.targeters.ConsoleTargeter;
+import io.lumine.xikage.mythicmobs.skills.targeters.IEntitySelector;
+import io.lumine.xikage.mythicmobs.skills.targeters.ILocationSelector;
+import io.lumine.xikage.mythicmobs.skills.targeters.MTOrigin;
+import io.lumine.xikage.mythicmobs.skills.targeters.MTTriggerLocation;
 
 /**
  * The original thread that this code belongs to can be found here:
@@ -92,6 +107,7 @@ public class ArmorStandAnimator {
 	/** If true the ArmorStand will auto init the animator again if its destroyed. */
 	private boolean autoInit = false;
 	private String MythicMobType;
+	private ActiveMob am;
 
 	/**
 	 * Constructor of the animator. Takes in the path to the file with the animation and the armor stand to animate.
@@ -105,6 +121,7 @@ public class ArmorStandAnimator {
 		startLocation = armorStand.getLocation();
 		if (oi!=null) this.autoInit = (Boolean)oi;
 		if (mobtype!=null) this.MythicMobType = (String)mobtype;
+		this.am = MythicMobs.inst().getAPIHelper().getMythicMobInstance(armorStand);
 		// checks if the file has been loaded before. If so return the cached version
 		if (animCache.containsKey(aniFile.getAbsolutePath())) {
 			frames = new Frame[animCache.get(aniFile.getAbsolutePath()).length];
@@ -210,6 +227,8 @@ public class ArmorStandAnimator {
 							x=-x;y=-y;z=-z;
 						}
 						currentFrame.head = new EulerAngle(x, y, z);
+					} else if (line.contains("executeSkill")) {
+						currentFrame.doSkill = line.replaceFirst("executeSkill ", "");
 					}
 				}
 				if (currentFrame != null) {
@@ -285,8 +304,8 @@ public class ArmorStandAnimator {
 					// get the new location
 					Location newLoc = startLocation.clone().add(f.x, f.y, f.z);
 					newLoc.setYaw(f.r + newLoc.getYaw());
-					newLoc.setPitch(f.r + newLoc.getPitch());
-					e.teleport(newLoc);
+					nmsutils.SetNMSLocation(e, newLoc.getX(), newLoc.getY(), newLoc.getZ(), newLoc.getYaw(), e.getLocation().getPitch());
+//					e.teleport(newLoc);
 				} else {
 					double xx,yy,zz;
 					xx = e.getVehicle().getLocation().getX();
@@ -302,15 +321,70 @@ public class ArmorStandAnimator {
 				armorStand.setLeftArmPose(f.leftArm);
 				armorStand.setRightArmPose(f.rightArm);
 				armorStand.setHeadPose(f.head);
+				
+				//check for skill in frame:
+				if (f.doSkill!=null) executeMythicMobsSkill(f.doSkill);
 			}
 			// go one frame higher
 			currentFrame++;
 		}
 	}
 
+	private void executeMythicMobsSkill(String skillName) {
+		if (this.am==null) return;
+	    Optional<SkillTargeter> maybeTargeter = Optional.empty();
+        SkillMetadata data = new SkillMetadata(SkillTrigger.API, this.am, this.am.getEntity(), this.am.getLocation(), null, null, 1.0f);
+	    String target = null;
+	    String sname = skillName.split(" ")[0];
+	    if (skillName.contains("@")) {
+	    	String[] split = skillName.split("@");
+	    	target = "@"+split[1].split(" ")[0];
+	    	maybeTargeter = Optional.of(AbstractSkill.parseSkillTargeter(target));
+	    } else {
+	    	target = "<empty>";
+	    }
+	    if (maybeTargeter.isPresent()) {
+            SkillTargeter targeter = maybeTargeter.get();
+            if (targeter instanceof IEntitySelector) {
+                data.setEntityTargets(((IEntitySelector)targeter).getEntities(data));
+                ((IEntitySelector)targeter).filter(data, false);
+            }
+            if (targeter instanceof ILocationSelector) {
+                data.setLocationTargets(((ILocationSelector)targeter).getLocations(data));
+                ((ILocationSelector)targeter).filter(data);
+            } else if (targeter instanceof MTOrigin) {
+                data.setLocationTargets(((MTOrigin)targeter).getLocation(data.getOrigin()));
+            } else if (targeter instanceof MTTriggerLocation) {
+                HashSet<AbstractLocation> lTargets = new HashSet<AbstractLocation>();
+                lTargets.add(data.getTrigger().getLocation());
+                data.setLocationTargets(lTargets);
+            }
+            if (targeter instanceof ConsoleTargeter) {
+                data.setEntityTargets(null);
+                data.setLocationTargets(null);
+            }
+        } else {
+        	if (am.hasThreatTable()) {
+        		data.setEntityTarget(am.getThreatTable().getTopThreatHolder());
+        	} else if (am.getEntity().getTarget()!=null) {
+        		data.setEntityTarget(am.getEntity().getTarget());
+        	} else {
+        		data.setEntityTarget(am.getEntity());
+        	}
+        }
+        Optional<Skill> maybeSkill = MythicMobs.inst().getSkillManager().getSkill(sname);
+        if (!maybeSkill.isPresent()) return;
+        Skill skill = maybeSkill.get();
+        if (skill.usable(data, SkillTrigger.API)) skill.execute(data);
+	}
+
 	/** Returns the current frame */
 	public int getCurrentFrame() {
 		return currentFrame;
+	}
+	/** Returns the skill to execute after this frame */
+	public String checkForSkill() {
+		return this.frames[this.currentFrame].doSkill;
 	}
 
 	/** Sets the current frame */
@@ -417,6 +491,8 @@ public class ArmorStandAnimator {
 		int frameID;
 		//Summon_Parent_To_Follow
 		String MythicMobType;
+		//do a skill at this frame
+		String doSkill;
 		//AutoInit after AnimatorInstance destroyed
 		boolean autoInit;
 		/**the location and rotation and pitch*/

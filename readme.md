@@ -1,6 +1,48 @@
 # AnimateStands 4 MythicMobs
 build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires MythicMobs 4.0.0 or higher
 
+*** 1.4.2017 update: added "executeSkill" option to anim file. If this option is set to a frame, the animatorstand will execute any metaskill if the frame is played. All mm targeters are useable
+Example animfile:
+```
+
+Anim file:
+
+interpolate
+length 16
+frame 0
+Armorstand_Position 0.0 0.0 0.0 0.0
+Armorstand_Middle -1.7735 -1.9591 0
+Armorstand_Right_Leg 0 4.7462 12.0494
+Armorstand_Left_Leg 0 -5.2681 -6.6472
+Armorstand_Left_Arm 6.1476 0 -42.2486
+Armorstand_Right_Arm 0 -3.1448 41.9762
+Armorstand_Head 0 -24.967 -0.4532
+frame 7
+executeSkill particlestest @PIR{r=5}
+Armorstand_Position 0.0 0.0 0.0 0.0
+Armorstand_Middle 0 0 -2.4842
+Armorstand_Right_Leg 0 0 13.5406
+Armorstand_Left_Leg 0 -6.5557 -15.3523
+Armorstand_Left_Arm -8.7445 0 -151.9446
+Armorstand_Right_Arm 10.178 0 154.3655
+Armorstand_Head 9.236 2.7374 -9.5706
+frame 15
+Armorstand_Position 0.0 0.0 0.0 0.0
+Armorstand_Middle -1.7735 -1.9591 0
+Armorstand_Right_Leg 0 4.7462 12.0494
+Armorstand_Left_Leg 0 -5.2681 -6.6472
+Armorstand_Left_Arm 6.1476 0 -42.2486
+Armorstand_Right_Arm 0 -3.1448 41.9762
+Armorstand_Head 0 -24.967 -0.4532
+
+
+Skill file:
+particlestest:
+  Skills:
+  - particles{particle=heart;amount=8;vSpread=0.5;hSpread=0.5;Spped=0.01;yoffset=1}
+```
+
+
 *** 10.3.2017 update: added "Animate_Negate" option for anim files. If this is set all positions of the armorstand (expect the World Position itself) will be negated. For compatibility with some animation programs.
 
 ### How to install?

@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 
 public class ArmorStandUtils {
 
@@ -42,17 +43,18 @@ public class ArmorStandUtils {
 	        			} else {
 	        				this.cancel();
 	        			}
-	                } 
+	                }
 	            }.runTaskTimer(main.inst(), 0, delay);
 				return true;
 			} else if (autoInit) {
-				return initArmorStandAnim(entity, animFile, base, oi, mobtype);
+				return initArmorStandAnim(MythicMobs.inst().getAPIHelper().getMythicMobInstance(entity.getBukkitEntity()), animFile, base, oi, mobtype);
 			}
 		}
 		return false;
 	}
 	
-	public static boolean initArmorStandAnim(AbstractEntity target, String file, boolean base, Object oi, Object mobtype) {
+	public static boolean initArmorStandAnim(ActiveMob am, String file, boolean base, Object oi, Object mobtype) {
+		AbstractEntity target = am.getEntity();
 		if (!target.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) return false;
 		ArmorStand as = (ArmorStand)target.getBukkitEntity();
 		ArmorStandAnimator asa=null;
