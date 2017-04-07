@@ -203,7 +203,7 @@ public class ArmorStandAnimator {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
 						float z = (float) Math.toRadians(Float.parseFloat(line.split(" ")[3]));
-						if (this.negated) {
+									if (this.negated) {
 							x=-x;y=-y;z=-z;
 						}
 						currentFrame.leftArm = new EulerAngle(x, y, z);
@@ -340,8 +340,6 @@ public class ArmorStandAnimator {
 	    	String[] split = skillName.split("@");
 	    	target = "@"+split[1].split(" ")[0];
 	    	maybeTargeter = Optional.of(AbstractSkill.parseSkillTargeter(target));
-	    } else {
-	    	target = "<empty>";
 	    }
 	    if (maybeTargeter.isPresent()) {
             SkillTargeter targeter = maybeTargeter.get();
