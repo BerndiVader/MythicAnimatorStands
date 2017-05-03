@@ -1,0 +1,12 @@
+playDamage:
+  Skills:
+  - aschange{anim=flip.anim} @self
+  - delay 15
+  - aschange{anim=Example1.anim} @self
+
+makeAttack:
+  Skills:
+  - aschange{anim=winke.anim} @self
+  - delay 16
+  - damage{a=2} @trigger
+  - aschange{anim=Example1.anim} @self

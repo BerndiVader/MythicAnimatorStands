@@ -9,6 +9,7 @@ Armorstand_Left_Arm 6.1476 0 -42.2486
 Armorstand_Right_Arm 0 -3.1448 41.9762
 Armorstand_Head 0 -24.967 -0.4532
 frame 7
+executeSkill particlestest @PIR{r=5}
 Armorstand_Position 0.0 0.0 0.0 0.0
 Armorstand_Middle 0 0 -2.4842
 Armorstand_Right_Leg 0 0 13.5406

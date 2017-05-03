@@ -9,9 +9,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.EulerAngle;
 
 import com.gmail.berndivader.mmArmorStandAnimator.NMS.NMSUtils;
@@ -30,38 +35,8 @@ import io.lumine.xikage.mythicmobs.skills.targeters.ILocationSelector;
 import io.lumine.xikage.mythicmobs.skills.targeters.MTOrigin;
 import io.lumine.xikage.mythicmobs.skills.targeters.MTTriggerLocation;
 
-/**
- * The original thread that this code belongs to can be found here:
- * https://www.spigotmc.org/threads/armor-stand-animator-class.152863/
- * MIT License
-
-Copyright (c) 2016 Bram Stout
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
- * @author Bram
- *
- */
 public class ArmorStandAnimator {
-
-	
 	private static NMSUtils nmsutils = main.NMSUtils();
-
 	/**
 	 * This is a map containing the already loaded frames. This way we don't have to parse the same animation over and over.
 	 */
@@ -106,9 +81,49 @@ public class ArmorStandAnimator {
 	private boolean negated = false;
 	/** If true the ArmorStand will auto init the animator again if its destroyed. */
 	private boolean autoInit = false;
-	private String MythicMobType;
-	private ActiveMob am;
-
+	private String aiMobName;
+	private File aniFile;
+	private ActiveMob am,aiMob;
+	private BukkitTask task;
+	/**
+	 * 
+	 * create the aiMob for the ArmorStand
+	 * 
+	 */
+	private void attachToAIMob() {
+		if (this.aiMob!=null && !this.aiMob.isDead()) return;
+		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
+		PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 2, false, false);
+		this.aiMob.getLivingEntity().addPotionEffect(pe);
+		Bukkit.getScheduler().runTaskLater(main.inst(), new Runnable() {
+			@Override
+			public void run() {
+				aiMob.getLivingEntity().addPotionEffect(pe);
+				armorStand.setInvulnerable(true);
+				String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
+				String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
+	            aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
+	            aiMob.getLivingEntity().setMetadata("aiMob1", new FixedMetadataValue(main.inst(),u2));
+			}
+		}, 1);
+		task = Bukkit.getScheduler().runTaskTimer(main.inst(), new Runnable() {
+            @Override
+            public void run() {
+            	if (aiMob.isDead() || armorStand.isDead()) {
+            		aiMob.getEntity().remove();
+            		armorStand.remove();
+            		Bukkit.getScheduler().cancelTask(task.getTaskId());
+            	} else {
+					nmsutils.SetNMSLocation(armorStand,
+							aiMob.getEntity().getLocation().getX(),
+							aiMob.getEntity().getLocation().getY(),
+							aiMob.getEntity().getLocation().getZ(),
+							aiMob.getEntity().getLocation().getYaw(),
+							aiMob.getEntity().getLocation().getPitch());
+            	}
+            }
+       }, 1, 1);
+	}
 	/**
 	 * Constructor of the animator. Takes in the path to the file with the animation and the armor stand to animate.
 	 * 
@@ -117,21 +132,39 @@ public class ArmorStandAnimator {
 	 */
 	public ArmorStandAnimator(File aniFile, ArmorStand armorStand, Object oi, Object mobtype) {
 		// set all the stuff
+		this.aniFile = aniFile;
 		this.armorStand = armorStand;
 		startLocation = armorStand.getLocation();
 		if (oi!=null) this.autoInit = (Boolean)oi;
-		if (mobtype!=null) this.MythicMobType = (String)mobtype;
 		this.am = MythicMobs.inst().getAPIHelper().getMythicMobInstance(armorStand);
+		if (mobtype!=null) {
+			this.aiMobName = (String)mobtype;
+			this.attachToAIMob();
+		}
+		this.loadFrames();
+		// register this instance of the animator
+		animators.add(this);
+	}
+	
+	public void changeAnim(File aniFile) {
+		this.stop();
+		this.aniFile = aniFile;
+		this.loadFrames();
+		this.play();
+	}
+
+	private void loadFrames() {
 		// checks if the file has been loaded before. If so return the cached version
-		if (animCache.containsKey(aniFile.getAbsolutePath())) {
+		if (animCache.containsKey(this.aniFile.getAbsolutePath())) {
 			frames = new Frame[animCache.get(aniFile.getAbsolutePath()).length];
 			frames = animCache.get(aniFile.getAbsolutePath());
-			this.autoInit = frames[0].autoInit;
-			this.MythicMobType = frames[0].MythicMobType;
+//			this.autoInit = frames[0].autoInit;
+//			this.aiMobName = frames[0].aiMobName;
 			this.length = frames.length;
 			this.currentFrame=0;
 			this.paused=false;
 			this.negated=false;
+//			if (this.aiMobName.length()>0) this.attachToAIMob();
 		} else {
 			// File has not been loaded before so load it.
 			BufferedReader br = null;
@@ -149,8 +182,6 @@ public class ArmorStandAnimator {
 						this.negated = true;
 					} else if (line.startsWith("Animator_Auto_Init")) {
 						this.autoInit = true;
-					} else if (line.startsWith("MythicMob_Parent_Type")) {
-						this.MythicMobType = line.split(" ")[1];
 					}
 					// sets the current frame
 					else if (line.startsWith("frame")) {
@@ -248,18 +279,19 @@ public class ArmorStandAnimator {
 			}
 			// add the animation to the cache, else adding the whole cache thing has no point.
 			frames[0].autoInit=this.autoInit;
-			frames[0].MythicMobType = this.MythicMobType;
+			frames[0].aiMobName=this.aiMobName;
 			animCache.put(aniFile.getAbsolutePath(), frames);
 		}
-		// register this instance of the animator
-		animators.add(this);
 	}
-
+	
 	/**
 	 * This method removes this instance from the animator instances list. When you don't want to use this instance any more, you can call this method.
 	 */
 	public void remove() {
 		animators.remove(this);
+		if (this.aiMob!=null && !this.aiMob.getEntity().isDead()) {
+			this.aiMob.getEntity().remove();
+		}
 	}
 
 	/** Pauses the animation */
@@ -302,16 +334,16 @@ public class ArmorStandAnimator {
 				// check for vehicle
 				if (e.getVehicle()==null) {
 					// get the new location
-					Location newLoc = startLocation.clone().add(f.x, f.y, f.z);
-					newLoc.setYaw(f.r + newLoc.getYaw());
-					nmsutils.SetNMSLocation(e, newLoc.getX(), newLoc.getY(), newLoc.getZ(), newLoc.getYaw(), e.getLocation().getPitch());
-//					e.teleport(newLoc);
+					if (this.aiMob==null) {
+						Location newLoc = startLocation.clone().add(f.x, f.y, f.z);
+						newLoc.setYaw(f.r + newLoc.getYaw());
+						nmsutils.SetNMSLocation(e, newLoc.getX(), newLoc.getY(), newLoc.getZ(), newLoc.getYaw(), e.getLocation().getPitch());
+					}
 				} else {
 					double xx,yy,zz;
 					xx = e.getVehicle().getLocation().getX();
 					yy = e.getVehicle().getLocation().getY();
 					zz = e.getVehicle().getLocation().getZ();
-//					nmsutils.setRotation(e.getVehicle(), e.getVehicle().getLocation().getYaw()+f.r, e.getVehicle().getLocation().getPitch());
 					nmsutils.SetNMSLocation(e.getVehicle(), xx, yy, zz, e.getVehicle().getLocation().getYaw()+f.r, e.getVehicle().getLocation().getPitch());
 				}
 				// set all the values
@@ -487,8 +519,8 @@ public class ArmorStandAnimator {
 	public static class Frame {
 		/**The Frame ID*/
 		int frameID;
-		//Summon_Parent_To_Follow
-		String MythicMobType;
+		//MythicMob aiMob
+		String aiMobName;
 		//do a skill at this frame
 		String doSkill;
 		//AutoInit after AnimatorInstance destroyed
@@ -545,4 +577,5 @@ public class ArmorStandAnimator {
 			return f;
 		}
 	}
+
 }

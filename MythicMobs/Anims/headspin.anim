@@ -1,0 +1,18 @@
+interpolate
+length 41
+frame 0
+Armorstand_Position 0.0 0.0 0.0 0
+Armorstand_Middle 0 0 0
+Armorstand_Right_Leg 0 0 0
+Armorstand_Left_Leg 0 0 0
+Armorstand_Left_Arm 0 0 0
+Armorstand_Right_Arm 0 0 0
+Armorstand_Head 0 0 0
+frame 40
+Armorstand_Position 0.0 0.0 0.0 0
+Armorstand_Middle 0 0 0
+Armorstand_Right_Leg 0 0 0
+Armorstand_Left_Leg 0 0 0
+Armorstand_Left_Arm 0 0 0
+Armorstand_Right_Arm 0 0 0
+Armorstand_Head 360 360 0

@@ -1,3 +1,27 @@
+moonwalker:
+  Type: armor_stand
+  Options:
+    Invincible: true
+    HasArms: true
+    ItemBody: COS_GreenChest
+    ItemFeet: COS_BlueFeet
+    ItemHand: COS_IronSword
+    ItemHead: BlackbeardHead
+    ItemLegs: COS_YellowLegs
+  Skills:
+  - asinit{anim=Example1.anim;mobtype=aimob} @self ~onSpawn
+  - asanimate{r=20;d=0} @self ~onTimer:20
+  - skill{s=makeAttack} @trigger ~onAttack
+  - skill{s=playDamage} @trigger ~onDamaged 
+  - message{msg="You killed me!"} @trigger ~onSignal:DEATH
+  
+aimob:
+  Type: skeleton
+  Options:
+    PreventRandomEquipment: true
+    Silent: true
+    PreventOtherDrops: true
+
 winkemann:
   Type: armor_stand
   Options:
@@ -8,8 +32,9 @@ winkemann:
     ItemHead: BlackbeardHead
     ItemLegs: COS_YellowLegs
   Skills:
-  - asinit{anim=winke.anim} @self ~onSpawn 1
+  - asinit{anim=winke.anim;base=false;ai=true} @self ~onSpawn 1
   - asanimate{anim=winke.anim;r=20;d=0} @self ~onTimer:20 1
+  - asunload @self ~onInteract 1
 
 hampelmann:
   Type: armor_stand
@@ -23,6 +48,7 @@ hampelmann:
   Skills:
   - asinit{anim=Example2.anim} @self ~onSpawn 1
   - asanimate{anim=Example2.anim;r=20;d=0} @self ~onTimer:20 1
+  - skill{s=animatorskill} @self ~onInteract 1
   
 flipmann:
   Type: armor_stand
@@ -37,20 +63,6 @@ flipmann:
   - asinit{anim=flip.anim} @self ~onSpawn 1
   - asanimate{anim=flip.anim;r=20;d=0} @self ~onTimer:20 1
   
-moonwalker:
-  Type: armor_stand
-  Options:
-    HasArms: true
-    ItemBody: COS_GreenChest
-    ItemFeet: COS_BlueFeet
-    ItemHand: COS_IronSword
-    ItemHead: BlackbeardHead
-    ItemLegs: COS_YellowLegs
-#  Riding: Rudolf
-  Skills:
-  - asinit{anim=Example1.anim} @self ~onSpawn 1
-  - asanimate{anim=Example1.anim;r=20;d=0} @self ~onTimer:20 1
-
 walker:
   Type: armor_stand
   Options:
@@ -60,7 +72,7 @@ walker:
     ItemHand: COS_IronSword
     ItemHead: BlackbeardHead
     ItemLegs: COS_YellowLegs
-  Riding: Rudolf
+  Riding: cart
   Skills:
   - asinit{anim=Example1.anim} @self ~onSpawn 1
   - asanimate{anim=Example1.anim;r=20;d=0} @self ~onTimer:20 1
@@ -68,7 +80,8 @@ walker:
 Rudolf:
   Mobtype: rabbit
   Options:
-    MovementSpeed: 0.1
+    MovementSpeed: 0.5
     PreventRenaming: true
+    Invincible: true
   Skills:
-  - potion{type=INVISIBILITY;duration=4000;level=1} @self ~onSpawn 1
+#  - potion{type=INVISIBILITY;duration=4000;level=1} @self ~onSpawn 1

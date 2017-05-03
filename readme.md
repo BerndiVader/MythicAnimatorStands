@@ -1,6 +1,58 @@
 # AnimateStands 4 MythicMobs
 build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires MythicMobs 4.0.0 or higher
 
+### note this is heavy experimental!
+
+*** 3.5.2017 update: added some sort of fake ai. use a mythicmob config to fake the ai and change the armorstands behaviors into it.
+*** 3.5.2017 update: added skill "aschange" to change the animation file. see examples
+
+```
+
+mobfile:
+
+moonwalker:
+  Type: armor_stand
+  Options:
+    Invincible: true
+    HasArms: true
+    ItemBody: COS_GreenChest
+    ItemFeet: COS_BlueFeet
+    ItemHand: COS_IronSword
+    ItemHead: BlackbeardHead
+    ItemLegs: COS_YellowLegs
+  Skills:
+  - asinit{anim=Example1.anim;mobtype=aimob} @self ~onSpawn
+  - asanimate{r=20;d=0} @self ~onTimer:20
+  - skill{s=makeAttack} @trigger ~onAttack
+  - skill{s=playDamage} @trigger ~onDamaged 
+  - message{msg="You killed me!"} @trigger ~onSignal:DEATH
+  
+aimob:
+  Type: skeleton
+  Options:
+    PreventRandomEquipment: true
+    Silent: true
+    PreventOtherDrops: true
+
+
+skillfile:
+
+playDamage:
+  Skills:
+  - aschange{anim=flip.anim} @self
+  - delay 15
+  - aschange{anim=Example1.anim} @self
+
+makeAttack:
+  Skills:
+  - aschange{anim=winke.anim} @self
+  - delay 16
+  - damage{a=2} @trigger
+  - aschange{anim=Example1.anim} @self
+
+```
+
+
 *** 1.4.2017 update: added "executeSkill" option to anim file. If this option is set to a frame, the animatorstand will execute any metaskill if the frame is played. All mm targeters are useable
 Example animfile:
 ```

@@ -7,20 +7,13 @@ import io.lumine.xikage.mythicmobs.skills.ITargetedEntitySkill;
 import io.lumine.xikage.mythicmobs.skills.SkillMechanic;
 import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
 
-public class mmArmorStandAnimateMechanic extends SkillMechanic implements ITargetedEntitySkill, INoTargetSkill {
-
+public class mmArmorStandChangeAnimMechanic extends SkillMechanic implements ITargetedEntitySkill, INoTargetSkill {
 	private String animFile;
-	private int repeat, delay;
-	private boolean base;
-	
-	public mmArmorStandAnimateMechanic(String skill, MythicLineConfig mlc) {
+
+	public mmArmorStandChangeAnimMechanic(String skill, MythicLineConfig mlc) {
 		super(skill, mlc);
+		this.ASYNC_SAFE=false;
 		this.animFile = mlc.getString(new String[]{"animation","anim","a"},"");
-		this.repeat = mlc.getInteger(new String[]{"repeat","r"},0);
-		this.delay = mlc.getInteger(new String[]{"delay","d"},0);
-		this.base = mlc.getBoolean(new String[]{"base","plate"},false);
-		this.delay = this.delay>=0?this.delay:0;
-		this.repeat = this.repeat>=0?this.repeat:0;
 	}
 
 	@Override
@@ -30,6 +23,7 @@ public class mmArmorStandAnimateMechanic extends SkillMechanic implements ITarge
 
 	@Override
 	public boolean castAtEntity(SkillMetadata data, AbstractEntity target) {
-		return ArmorStandUtils.animateArmorStand(target, this.animFile, this.repeat, this.delay, this.base, null, null);
+		return ArmorStandUtils.changeAnimation(target, this.animFile);
 	}
+
 }
