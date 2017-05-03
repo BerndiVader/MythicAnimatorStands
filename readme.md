@@ -28,26 +28,36 @@ moonwalker:
   - message{msg="You killed me!"} @trigger ~onSignal:DEATH
   
 aimob:
-  Type: skeleton
+  Type: zombie
   Options:
-    PreventRandomEquipment: true
     Silent: true
     PreventOtherDrops: true
+  AIGoalSelectors:
+    - 0 clear
+    - 1 meleeattack
+    - 2 randomstroll
+    - 3 float
+  AITargetSelectors:
+    - 0 clear
+    - 1 players
 
 
 skillfile:
 
 playDamage:
+  Cooldown: 1
   Skills:
   - aschange{anim=flip.anim} @self
   - delay 15
   - aschange{anim=Example1.anim} @self
 
 makeAttack:
+  Cooldown: 1
   Skills:
   - aschange{anim=winke.anim} @self
-  - delay 16
-  - damage{a=2} @trigger
+  - delay 8
+  - damage{a=0.5} @trigger
+  - delay 8
   - aschange{anim=Example1.anim} @self
 
 ```

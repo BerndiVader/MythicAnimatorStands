@@ -16,12 +16,19 @@ moonwalker:
   - message{msg="You killed me!"} @trigger ~onSignal:DEATH
   
 aimob:
-  Type: skeleton
+  Type: zombie
   Options:
-    PreventRandomEquipment: true
     Silent: true
     PreventOtherDrops: true
-
+  AIGoalSelectors:
+    - 0 clear
+    - 1 meleeattack
+    - 2 randomstroll
+    - 3 float
+  AITargetSelectors:
+    - 0 clear
+    - 1 players
+  
 winkemann:
   Type: armor_stand
   Options:

@@ -95,17 +95,19 @@ public class ArmorStandAnimator {
 		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
 		PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 2, false, false);
 		this.aiMob.getLivingEntity().addPotionEffect(pe);
+		String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
+		String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
+        aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
+        aiMob.getLivingEntity().setMetadata("aiMob1", new FixedMetadataValue(main.inst(),u2));
 		Bukkit.getScheduler().runTaskLater(main.inst(), new Runnable() {
 			@Override
 			public void run() {
 				aiMob.getLivingEntity().addPotionEffect(pe);
 				armorStand.setInvulnerable(true);
-				String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
-				String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
-	            aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
-	            aiMob.getLivingEntity().setMetadata("aiMob1", new FixedMetadataValue(main.inst(),u2));
+				aiMob.getLivingEntity().setCanPickupItems(false);
+				aiMob.getLivingEntity().getEquipment().clear();
 			}
-		}, 1);
+		}, 5);
 		task = Bukkit.getScheduler().runTaskTimer(main.inst(), new Runnable() {
             @Override
             public void run() {
