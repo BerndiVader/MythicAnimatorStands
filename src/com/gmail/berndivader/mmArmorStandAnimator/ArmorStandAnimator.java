@@ -144,6 +144,7 @@ public class ArmorStandAnimator {
 							aiMob.getEntity().getLocation().getZ(),
 							aiMob.getEntity().getLocation().getYaw(),
 							aiMob.getEntity().getLocation().getPitch());
+					armorStand.getLocation().setDirection(aiMob.getEntity().getBukkitEntity().getLocation().getDirection());
 					int check = checkMovement();
 					if (check==1) {
 						am.signalMob(null, "MOVESTART");
