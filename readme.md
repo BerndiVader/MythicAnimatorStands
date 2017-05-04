@@ -3,10 +3,53 @@ build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires Myt
 
 ### note this is heavy experimental!
 
+*** 4.5.2017 update 0.37a: added movement signals. Use "~onSignal:MOVESTOPP" & "~onSignal:MOVESTART" to control the idle or moving animation.
+```
+Example for MOVESTOPP & MOVESTART:
+moonwalker:
+  Type: armor_stand
+  Options:
+    Small: true
+    Invincible: true
+    HasArms: true
+    ItemBody: COS_GreenChest
+    ItemFeet: COS_BlueFeet
+    ItemHand: COS_IronSword
+    ItemHead: BlackbeardHead
+    ItemLegs: COS_YellowLegs
+  Skills:
+  - asinit{anim=Example1.anim;mobtype=aimob} @self ~onSpawn
+  - asanimate{r=20;d=0} @self ~onTimer:20
+  - aspause @self ~onSignal:MOVESTOPP
+  - asrun @self ~onSignal:MOVESTART
+  - skill{s=makeAttack} @trigger ~onAttack
+  - skill{s=playDamage} @trigger ~onDamaged 
+  - message{msg="You killed me!"} @trigger ~onSignal:DEATH
+aimob:
+  Type: wolf
+  Options:
+    Silent: true
+    PreventOtherDrops: true
+	
+playDamage:
+  Cooldown: 1
+  Skills:
+  - aschange{anim=flip.anim} @self
+  - delay 15
+  - aschange{anim=Example1.anim} @self
+
+makeAttack:
+  Cooldown: 1
+  Skills:
+  - aschange{anim=winke.anim} @self
+  - delay 8
+  - damage{a=0.5} @trigger
+  - delay 8
+  - aschange{anim=Example1.anim} @self
+```
 *** 4.5.2017 update: fixed a server crash exception. some optimization. redid the ASANIMATE mechanic. Now only repeat and delay is needed.
 *** 3.5.2017 update: added some sort of fake ai. use a mythicmob config to fake the ai and change the armorstands behaviors into it.
 *** 3.5.2017 update: added skill "aschange" to change the animation file. see examples
-
 ```
 moonwalker:
   Type: armor_stand
@@ -59,12 +102,9 @@ makeAttack:
   - aschange{anim=Example1.anim} @self
 
 ```
-
 *** 1.4.2017 update: added "executeSkill" option to anim file. If this option is set to a frame, the animatorstand will execute any metaskill if the frame is played. All mm targeters are useable
-Example animfile:
 ```
-
-Anim file:
+Example animfile:
 
 interpolate
 length 16

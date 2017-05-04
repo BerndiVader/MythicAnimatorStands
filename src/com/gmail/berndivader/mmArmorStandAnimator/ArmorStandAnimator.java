@@ -85,10 +85,32 @@ public class ArmorStandAnimator {
 	private File aniFile;
 	private ActiveMob am,aiMob;
 	private BukkitTask task;
+	private double mcheck;
+	private int lastaction;
 	/**
-	 * 
+	 * check for move trigger
+	 */
+	public int checkMovement() {
+		int action = 0;
+		double chk=this.armorStand.getLocation().getX()
+				+this.armorStand.getLocation().getY()
+				+this.armorStand.getLocation().getZ();
+		if (chk!=this.mcheck) {
+			if (lastaction!=1) {
+				action = 1;
+				this.lastaction = 1;
+			}
+			this.mcheck=chk;
+		} else {
+			if (lastaction!=2) {
+				action = 2;
+				this.lastaction=2;
+			}
+		}
+		return action;
+	}
+	/**
 	 * create the aiMob for the ArmorStand
-	 * 
 	 */
 	private void attachToAIMob() {
 		if (this.aiMob!=null && !this.aiMob.isDead()) return;
@@ -122,6 +144,11 @@ public class ArmorStandAnimator {
 							aiMob.getEntity().getLocation().getZ(),
 							aiMob.getEntity().getLocation().getYaw(),
 							aiMob.getEntity().getLocation().getPitch());
+					int check = checkMovement();
+					if (check==1) {
+						am.signalMob(null, "MOVESTART");
+					} else if (check==2)
+						am.signalMob(null, "MOVESTOPP");
             	}
             }
        }, 1, 1);
@@ -146,6 +173,7 @@ public class ArmorStandAnimator {
 		this.loadFrames();
 		// register this instance of the animator
 		animators.add(this);
+		this.checkMovement();
 	}
 	
 	public void changeAnim(File aniFile) {
@@ -160,13 +188,10 @@ public class ArmorStandAnimator {
 		if (animCache.containsKey(this.aniFile.getAbsolutePath())) {
 			frames = new Frame[animCache.get(aniFile.getAbsolutePath()).length];
 			frames = animCache.get(aniFile.getAbsolutePath());
-//			this.autoInit = frames[0].autoInit;
-//			this.aiMobName = frames[0].aiMobName;
 			this.length = frames.length;
 			this.currentFrame=0;
 			this.paused=false;
 			this.negated=false;
-//			if (this.aiMobName.length()>0) this.attachToAIMob();
 		} else {
 			// File has not been loaded before so load it.
 			BufferedReader br = null;
