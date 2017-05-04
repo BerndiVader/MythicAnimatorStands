@@ -1,10 +1,8 @@
 package com.gmail.berndivader.mmArmorStandAnimator;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -110,22 +108,15 @@ public class mmMythicMobsEvents implements Listener {
 	@EventHandler
 	public void mmArmorStandAnimatorDestroy(EntityDamageByEntityEvent e) {
 		if (e.getEntity().getType().equals(EntityType.ARMOR_STAND)) {
-			ArmorStand as=(ArmorStand)e.getEntity();
 			Entity entity = e.getEntity();
 			Bukkit.getScheduler().scheduleSyncDelayedTask(main.inst(), new Runnable() {
 	            @Override
 	            public void run() {
 	    			if (entity.isDead()) {
-	    				Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator();
-	    				ArmorStandAnimator asa = null;
-	    				while (it.hasNext()) {
-	    					asa = it.next();
-	    					ArmorStand a = asa.getArmorStand();
-	    					if (as.getUniqueId()==a.getUniqueId()) {
-	    						asa.stop();
-	    						asa.remove();
-	    						break;
-	    					}
+	    				ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(BukkitAdapter.adapt(entity));
+	    				if (asa!=null) {
+	   						asa.stop();
+	   						asa.remove();
 	    				}
 	    			}
 	            }

@@ -14,95 +14,52 @@ import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 
 public class ArmorStandUtils {
 
-	public static boolean animateArmorStand(AbstractEntity entity, String animFile, int repeat, int delay, boolean base, Object oi, Object mobtype) {
-		if (entity.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) {
-			boolean autoInit=false;
-			if (oi!=null) autoInit = (Boolean) oi;
-			ArmorStand as = (ArmorStand)entity.getBukkitEntity();
-			ArmorStand a=null;
-			ArmorStandAnimator asa=null;
-			boolean match=false;
-			Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator();
-			while (it.hasNext()) {
-				asa = it.next();
-				a = asa.getArmorStand();
-				if (as.getUniqueId()==a.getUniqueId()) {
-					match=true;
-					break;
-				}
-			}
-			if (match) {
-				final ArmorStandAnimator aa = asa;
-				new BukkitRunnable() {
-	        		int r = repeat;
-	        		public void run() {
-	        			if (r!=-1) {
-        					aa.setStartLocation(as.getLocation());
-	        				aa.update();
-	        				r--;
-	        			} else {
-	        				this.cancel();
-	        			}
-	                }
-	            }.runTaskTimer(main.inst(), 0, delay);
-				return true;
-			} else if (autoInit) {
-				return initArmorStandAnim(MythicMobs.inst().getAPIHelper().getMythicMobInstance(entity.getBukkitEntity()), animFile, base, oi, mobtype);
-			}
+	public static boolean animateArmorStand(AbstractEntity entity, int repeat, int delay) {
+		ArmorStandAnimator asa=getAnimatorInstance(entity);
+		if (asa!=null) {
+			ArmorStand as = asa.getArmorStand();
+			final ArmorStandAnimator aa = asa;
+			new BukkitRunnable() {
+        		int r = repeat;
+        		public void run() {
+        			if (r!=-1) {
+       					aa.setStartLocation(as.getLocation());
+        				aa.update();
+        				r--;
+        			} else {
+        				this.cancel();
+        			}
+                }
+            }.runTaskTimer(main.inst(), 0, delay);
+			return true;
 		}
 		return false;
 	}
 	
 	public static boolean changeAnimation(AbstractEntity entity, String animFile) {
-		if (entity.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) {
-			ArmorStand as = (ArmorStand)entity.getBukkitEntity();
-			ArmorStand a=null;
-			ArmorStandAnimator asa=null;
-			boolean match=false;
-			Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator();
-			while (it.hasNext()) {
-				asa = it.next();
-				a = asa.getArmorStand();
-				if (as.getUniqueId()==a.getUniqueId()) {
-					match=true;
-					break;
-				}
+		ArmorStandAnimator asa  = getAnimatorInstance(entity);
+		if (asa!=null) {
+			try {
+				File f = new File(MythicMobs.inst().getDataFolder()+"\\Anims", animFile);
+				asa.changeAnim(f);
+			} catch (Exception e) {
+				Bukkit.getLogger().warning("Could not load animation: " + animFile);
+				return false;
 			}
-			if (match) {
-				final ArmorStandAnimator aa = asa;
-				try {
-					File f = new File(MythicMobs.inst().getDataFolder()+"\\Anims", animFile);
-					aa.changeAnim(f);
-				} catch (Exception e) {
-					Bukkit.getLogger().warning("Could not load animation: " + animFile);
-					return false;
-				}
-				return true;
-			}
+			return true;
 		}
 		return false;
 	}
 	
 	public static boolean initArmorStandAnim(ActiveMob am, String file, boolean base, Object oi, Object mobtype) {
 		AbstractEntity target = am.getEntity();
-		if (!target.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) return false;
+		if (!(target.getBukkitEntity() instanceof ArmorStand)) return false;
 		ArmorStand as = (ArmorStand)target.getBukkitEntity();
-		ArmorStandAnimator asa=null;
-		ArmorStand a=null;
-		boolean match=false;
-		Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator();
-		while (it.hasNext()) {
-			asa = it.next();
-			a = asa.getArmorStand();
-			if (as.getUniqueId()==a.getUniqueId()) {
-				match=true;
-				break;
-			}
-		}
-		if (match) {
+		ArmorStandAnimator asa=getAnimatorInstance(target);
+		if (asa != null) {
 			asa.stop();
 			asa.remove();
-		}
+		};
 		try {
 			File f = new File(MythicMobs.inst().getDataFolder()+"\\Anims", file);
 			asa = new ArmorStandAnimator(f, as, oi, mobtype);
@@ -156,7 +113,7 @@ public class ArmorStandUtils {
 		return false;
 	}
 	
-	private static ArmorStandAnimator getAnimatorInstance(AbstractEntity entity) {
+	public static ArmorStandAnimator getAnimatorInstance(AbstractEntity entity) {
 		if (!entity.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) return null;
 		ArmorStand as = (ArmorStand)entity.getBukkitEntity();
 		ArmorStandAnimator asa=null;
@@ -164,8 +121,7 @@ public class ArmorStandUtils {
 		boolean match=false;
 		while (it.hasNext()) {
 			asa = it.next();
-			ArmorStand a = asa.getArmorStand();
-			if (as.getUniqueId()==a.getUniqueId()) {
+			if (as.getUniqueId()==asa.getArmorStand().getUniqueId()) {
 				match=true;
 				break;
 			}

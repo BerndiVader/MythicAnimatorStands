@@ -3,13 +3,11 @@ build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires Myt
 
 ### note this is heavy experimental!
 
+*** 4.5.2017 update: fixed a server crash exception. some optimization. redid the ASANIMATE mechanic. Now only repeat and delay is needed.
 *** 3.5.2017 update: added some sort of fake ai. use a mythicmob config to fake the ai and change the armorstands behaviors into it.
 *** 3.5.2017 update: added skill "aschange" to change the animation file. see examples
 
 ```
-
-mobfile:
-
 moonwalker:
   Type: armor_stand
   Options:
@@ -61,7 +59,6 @@ makeAttack:
   - aschange{anim=Example1.anim} @self
 
 ```
-
 
 *** 1.4.2017 update: added "executeSkill" option to anim file. If this option is set to a frame, the animatorstand will execute any metaskill if the frame is played. All mm targeters are useable
 Example animfile:
@@ -126,12 +123,19 @@ This skill will setup the AnimateStand and assign the animation "Example.anim" t
 ######
 ###Animate the MythicMob:
 ```
-  - asAnimate{anim=Example.anim;r=20;d=0;plate=false} @self ~onTimer:20 1
+  - asAnimate{r=20;d=0} @self ~onTimer:20 1
 ```
 This skill will now play the animation Example.anim for (r=20) 20 times with a delay of (d=0) 0 ticks per frame. There is an ~onTimer:20 1 trigger which will restart the skill again. The AnimateStand timer should not last longer than the MythicMobs timer. It was nessercary for an buildin Timer because MythicMobs clocks only ticks every 4 ticks. This might be a bit to slow for the animations.
 ###### anim or a: again the name of the animation.
 ###### r or repeat: how many times should the animation repeat.
 ###### d or delay: how fast the animation should be played. where 0 is every tick.
+######
+###Change animation for the AnimatorStand:
+```
+  - aschange{anim=flip.anim} @self
+```
+This skill allows to change the animation. Useful for different animations on different events like damage attack and that stuff.
+###### anim or a: filename of the new animation.
 ######
 ### Pause the AnimateStand:
 With this skill you can pause the animation.

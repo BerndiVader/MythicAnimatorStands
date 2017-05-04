@@ -11,7 +11,8 @@ public class mmArmorStandUnloadMechanic extends SkillMechanic implements INoTarg
 
 	public mmArmorStandUnloadMechanic(String skill, MythicLineConfig mlc) {
 		super(skill, mlc);
-	}
+		this.ASYNC_SAFE=false;
+}
 
 	@Override
 	public boolean castAtEntity(SkillMetadata data, AbstractEntity target) {

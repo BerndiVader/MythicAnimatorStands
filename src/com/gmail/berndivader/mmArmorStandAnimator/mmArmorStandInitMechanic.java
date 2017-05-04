@@ -17,6 +17,7 @@ public class mmArmorStandInitMechanic extends SkillMechanic implements INoTarget
 	
 	public mmArmorStandInitMechanic(String skill, MythicLineConfig mlc) {
 		super(skill, mlc);
+		this.ASYNC_SAFE=false;
 		this.animFile = mlc.getString(new String[]{"animation","anim","a"},"");
 		this.base = mlc.getBoolean(new String[]{"base","plate"},false);
 		this.oi = mlc.getBoolean(new String[]{"autoinit","ai"},false);
