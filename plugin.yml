@@ -1,4 +1,4 @@
 name: mmArmorStandAnimator
 main: com.gmail.berndivader.mmArmorStandAnimator.main
-version: 0.37a
+version: 0.38a
 depend: [MythicMobs]

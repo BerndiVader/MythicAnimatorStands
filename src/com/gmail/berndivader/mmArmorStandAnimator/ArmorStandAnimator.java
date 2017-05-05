@@ -88,6 +88,28 @@ public class ArmorStandAnimator {
 	private double mcheck;
 	private int lastaction;
 	/**
+	 * Constructor of the animator. Takes in the path to the file with the animation and the armor stand to animate.
+	 * 
+	 * @param aniFile
+	 * @param armorStand
+	 */
+	public ArmorStandAnimator(File aniFile, ArmorStand armorStand, Object oi, Object mobtype) {
+		// set all the stuff
+		this.aniFile = aniFile;
+		this.armorStand = armorStand;
+		startLocation = armorStand.getLocation();
+		if (oi!=null) this.autoInit = (Boolean)oi;
+		this.am = MythicMobs.inst().getAPIHelper().getMythicMobInstance(armorStand);
+		if (mobtype!=null) {
+			this.aiMobName = (String)mobtype;
+			this.attachToAIMob();
+		}
+		this.loadFrames();
+		// register this instance of the animator
+		animators.add(this);
+		this.checkMovement();
+	}
+	/**
 	 * check for move trigger
 	 */
 	public int checkMovement() {
@@ -138,45 +160,41 @@ public class ArmorStandAnimator {
             		armorStand.remove();
             		Bukkit.getScheduler().cancelTask(task.getTaskId());
             	} else {
+					int check = checkMovement();
+					if (check==1) {
+						am.signalMob(null, "MOVESTART");
+					} else if (check==2) {
+						am.signalMob(null, "MOVESTOPP");
+					}
+					float y = aiMob.getEntity().getLocation().getYaw();
+					float p = aiMob.getEntity().getLocation().getPitch();
+					Location l=null;
+					if (lastaction==2 && aiMob.hasTarget()) {
+						l = ArmorStandUtils.lookAt(armorStand.getLocation(), aiMob.getEntity().getTarget().getBukkitEntity().getLocation());
+					} else {
+						Location ll = ArmorStandUtils.getTargetBlock(aiMob.getLivingEntity(), 10);
+						if (ll!=null) {
+							l = ArmorStandUtils.lookAt(armorStand.getLocation(),ll);
+						}
+					}
+					if (l!=null) {
+						y = l.getYaw();
+						p = l.getPitch();
+					}
 					nmsutils.SetNMSLocation(armorStand,
 							aiMob.getEntity().getLocation().getX(),
 							aiMob.getEntity().getLocation().getY(),
 							aiMob.getEntity().getLocation().getZ(),
-							aiMob.getEntity().getLocation().getYaw(),
-							aiMob.getEntity().getLocation().getPitch());
-					armorStand.getLocation().setDirection(aiMob.getEntity().getBukkitEntity().getLocation().getDirection());
-					int check = checkMovement();
-					if (check==1) {
-						am.signalMob(null, "MOVESTART");
-					} else if (check==2)
-						am.signalMob(null, "MOVESTOPP");
-            	}
+							y,
+							p);
+				}
             }
        }, 1, 1);
 	}
 	/**
-	 * Constructor of the animator. Takes in the path to the file with the animation and the armor stand to animate.
-	 * 
+	 * Change the Animation of the AnimatorStand
 	 * @param aniFile
-	 * @param armorStand
 	 */
-	public ArmorStandAnimator(File aniFile, ArmorStand armorStand, Object oi, Object mobtype) {
-		// set all the stuff
-		this.aniFile = aniFile;
-		this.armorStand = armorStand;
-		startLocation = armorStand.getLocation();
-		if (oi!=null) this.autoInit = (Boolean)oi;
-		this.am = MythicMobs.inst().getAPIHelper().getMythicMobInstance(armorStand);
-		if (mobtype!=null) {
-			this.aiMobName = (String)mobtype;
-			this.attachToAIMob();
-		}
-		this.loadFrames();
-		// register this instance of the animator
-		animators.add(this);
-		this.checkMovement();
-	}
-	
 	public void changeAnim(File aniFile) {
 		this.stop();
 		this.aniFile = aniFile;
@@ -547,11 +565,11 @@ public class ArmorStandAnimator {
 	public static class Frame {
 		/**The Frame ID*/
 		int frameID;
-		//MythicMob aiMob
+		/**MythicMob aiMob*/
 		String aiMobName;
-		//do a skill at this frame
+		/**do a skill at this frame*/
 		String doSkill;
-		//AutoInit after AnimatorInstance destroyed
+		/**AutoInit after AnimatorInstance destroyed*/
 		boolean autoInit;
 		/**the location and rotation and pitch*/
 		float x, y, z, r, p;

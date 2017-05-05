@@ -5,6 +5,8 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicConditionLoadEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMechanicLoadEvent;
@@ -47,6 +50,9 @@ public class mmMythicMobsEvents implements Listener {
 			e.register(skill);
 		} else if (e.getMechanicName().toUpperCase().equals("ASCHANGE")) {
 			SkillMechanic skill = new mmArmorStandChangeAnimMechanic(e.getContainer().getConfigLine(),e.getConfig());
+			e.register(skill);
+		} else if (e.getMechanicName().toUpperCase().equals("ASLOOKAT")) {
+			SkillMechanic skill = new mmArmorStandLookAtMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
 		}
 	}
@@ -89,8 +95,9 @@ public class mmMythicMobsEvents implements Listener {
 				u = this.getUUIDbyMeta(e.getEntity());
 				if (MythicMobs.inst().getMobManager().isActiveMob(u)) {
 					ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(u).get();
-					am.setLastAggroCause(BukkitAdapter.adapt(ed.getDamager()));
-					new TriggeredSkill(SkillTrigger.DAMAGED, am, BukkitAdapter.adapt(ed.getDamager()));
+					AbstractEntity damager = getAttacker(ed.getDamager());
+					am.setLastAggroCause(damager);
+					new TriggeredSkill(SkillTrigger.DAMAGED, am, damager);
 				}
 				return;
 			}
@@ -122,6 +129,23 @@ public class mmMythicMobsEvents implements Listener {
 	            }
 	        });			
 		}
+	}
+	
+	private AbstractEntity getAttacker(Entity damager) {
+        if (damager instanceof Projectile) {
+            if (((Projectile)damager).getShooter() instanceof LivingEntity) {
+                LivingEntity shooter = (LivingEntity)((Projectile)damager).getShooter();
+                if (shooter != null && shooter instanceof LivingEntity) {
+                    return BukkitAdapter.adapt(shooter);
+                }
+            } else {
+                return null;
+            }
+        }
+        if (damager instanceof LivingEntity) {
+            return BukkitAdapter.adapt(damager);
+        }
+        return null;
 	}
 
 	private UUID getUUIDbyMeta(Entity e) {
