@@ -151,7 +151,7 @@ public class ArmorStandAnimator {
 				aiMob.getLivingEntity().setCanPickupItems(false);
 				aiMob.getLivingEntity().getEquipment().clear();
 			}
-		}, 5);
+		}, 2);
 		task = Bukkit.getScheduler().runTaskTimer(main.inst(), new Runnable() {
             @Override
             public void run() {
