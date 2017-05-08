@@ -1,14 +1,22 @@
 # AnimateStands 4 MythicMobs
-build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires ProtocolLib & MythicMobs 4.0.0 or higher
+#####build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires ProtocolLib & MythicMobs 4.0.0 or higher
 
 *** 8.5.2017 update 0.41a: now using ProtocolLib. 
+#####
 *** 7.5.2017 update 0.40a: some major changes & bugfixes. Added depend to ProtocolLib for PacketEvent
+#####
 *** 5.5.2017 update 0.38a: fixed some minor bugs. Improved direction rotation if in movement & armorstand now looks at target if not moving.
+#####
 *** 4.5.2017 update 0.37a: added movement signals. Use "~onSignal:MOVESTOPP" & "~onSignal:MOVESTART" to control the idle or moving animation.
+#####
 *** 4.5.2017 update: fixed a server crash exception. some optimization. redid the ASANIMATE mechanic. Now only repeat and delay is needed.
+#####
 *** 3.5.2017 update: added some sort of fake ai. use a mythicmob config to fake the ai and change the armorstands behaviors into it.
+#####
 *** 3.5.2017 update: added skill "aschange" to change the animation file. see examples
+#####
 *** 1.4.2017 update: added "executeSkill" option to anim file. If this option is set to a frame, the animatorstand will execute any metaskill if the frame is played. All mm targeters are useable
+#####
 *** 10.3.2017 update: added "Animate_Negate" option for anim files. If this is set all positions of the armorstand (expect the World Position itself) will be negated. For compatibility with some animation programs.
 
 ### How to install?
