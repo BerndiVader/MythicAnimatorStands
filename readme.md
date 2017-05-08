@@ -1,6 +1,7 @@
 # AnimateStands 4 MythicMobs
-build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires MythicMobs 4.0.0 or higher
+build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires ProtocolLib & MythicMobs 4.0.0 or higher
 
+*** 7.5.2017 update 0.40a: some major changes & bugfixes. Added depend to ProtocolLib for PacketEvent
 *** 5.5.2017 update 0.38a: fixed some minor bugs. Improved direction rotation if in movement & armorstand now looks at target if not moving.
 *** 4.5.2017 update 0.37a: added movement signals. Use "~onSignal:MOVESTOPP" & "~onSignal:MOVESTART" to control the idle or moving animation.
 ```
