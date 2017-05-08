@@ -1,6 +1,8 @@
 package com.gmail.berndivader.mmArmorStandAnimator;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -37,7 +39,7 @@ public class main extends JavaPlugin {
 		}
 		getNMSUtil();
 		new mmMythicMobsEvents();
-		//entityhider = new EntityHider(this);
+		entityhider = new EntityHider(this);
 
 		new BukkitRunnable() {
     		public void run() {
@@ -50,8 +52,13 @@ public class main extends JavaPlugin {
     					it.remove();
     				}
     			}
+    			Iterator<Entry<Integer,UUID>> it1 = entityhider.EntityMap.entrySet().iterator();
+    			while (it1.hasNext()) {
+    				Entry<Integer, UUID> u = it1.next();
+    				if (Bukkit.getEntity(u.getValue())==null) it1.remove();
+    			}
             }
-        }.runTaskTimerAsynchronously(this, 20L, 20L);
+        }.runTaskTimerAsynchronously(this, 1200L, 1200L);
         
 	}
 

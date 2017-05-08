@@ -14,8 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.EulerAngle;
 
@@ -73,6 +71,7 @@ public class ArmorStandAnimator {
 	public ArmorStandAnimator(File aniFile, ArmorStand armorStand, Object oi, Object mobtype) {
 		this.aniFile = aniFile;
 		this.armorStand = armorStand;
+        this.armorStand.setMetadata("asa", new FixedMetadataValue(main.inst(),true));
 		startLocation = armorStand.getLocation();
 		if (oi!=null) this.autoInit = (Boolean)oi;
 		this.am = MythicMobs.inst().getAPIHelper().getMythicMobInstance(armorStand);
@@ -107,9 +106,7 @@ public class ArmorStandAnimator {
 	
 	public void reAttachAIMob() {
 		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
-		PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 4, false, false);
-		this.aiMob.getLivingEntity().addPotionEffect(pe);
-//		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
+		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
 		String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
 		String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
         aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
@@ -118,11 +115,7 @@ public class ArmorStandAnimator {
 			@Override
 			public void run() {
 				ActiveMob aim = MythicMobs.inst().getAPIHelper().getMythicMobInstance(aiMob.getLivingEntity());
-				PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 4, false, false);
-				aim.getLivingEntity().addPotionEffect(pe);
-				armorStand.setInvulnerable(true);
 				aim.getLivingEntity().setCanPickupItems(false);
-				aim.getLivingEntity().getEquipment().clear();
 			}
 		}, 15);
 	}
@@ -130,9 +123,7 @@ public class ArmorStandAnimator {
 	private void attachToAIMob() {
 		if (this.aiMob!=null && !this.aiMob.isDead()) return;
 		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
-//		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
-		PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 4, false, false);
-		this.aiMob.getLivingEntity().addPotionEffect(pe);
+		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
 		String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
 		String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
         aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
@@ -142,11 +133,7 @@ public class ArmorStandAnimator {
 			@Override
 			public void run() {
 				ActiveMob aim = MythicMobs.inst().getAPIHelper().getMythicMobInstance(aiMob.getLivingEntity());
-				PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 4, false, false);
-				aim.getLivingEntity().addPotionEffect(pe);
-				armorStand.setInvulnerable(true);
 				aim.getLivingEntity().setCanPickupItems(false);
-				aim.getLivingEntity().getEquipment().clear();
 			}
 		}, 15);
 		task = Bukkit.getScheduler().runTaskTimer(main.inst(), new Runnable() {
@@ -168,10 +155,6 @@ public class ArmorStandAnimator {
             		armorStand.remove();
             		Bukkit.getScheduler().cancelTask(task.getTaskId());
             	} else {
-            		if (!aim.getLivingEntity().hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-        				PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 4, false, false);
-        				aim.getLivingEntity().addPotionEffect(pe);
-            		}
 					int check = checkMovement();
 					if (check==1) {
 						aam.signalMob(null, "MOVESTART");

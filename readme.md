@@ -1,147 +1,14 @@
 # AnimateStands 4 MythicMobs
 build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires ProtocolLib & MythicMobs 4.0.0 or higher
 
+*** 8.5.2017 update 0.41a: now using ProtocolLib. 
 *** 7.5.2017 update 0.40a: some major changes & bugfixes. Added depend to ProtocolLib for PacketEvent
 *** 5.5.2017 update 0.38a: fixed some minor bugs. Improved direction rotation if in movement & armorstand now looks at target if not moving.
 *** 4.5.2017 update 0.37a: added movement signals. Use "~onSignal:MOVESTOPP" & "~onSignal:MOVESTART" to control the idle or moving animation.
-```
-Example for MOVESTOPP & MOVESTART:
-moonwalker:
-  Type: armor_stand
-  Options:
-    Small: true
-    Invincible: true
-    HasArms: true
-    ItemBody: COS_GreenChest
-    ItemFeet: COS_BlueFeet
-    ItemHand: COS_IronSword
-    ItemHead: BlackbeardHead
-    ItemLegs: COS_YellowLegs
-  Skills:
-  - asinit{anim=Example1.anim;mobtype=aimob} @self ~onSpawn
-  - asanimate{r=20;d=0} @self ~onTimer:20
-  - aspause @self ~onSignal:MOVESTOPP
-  - asrun @self ~onSignal:MOVESTART
-  - skill{s=makeAttack} @trigger ~onAttack
-  - skill{s=playDamage} @trigger ~onDamaged 
-  - message{msg="You killed me!"} @trigger ~onSignal:DEATH
-aimob:
-  Type: wolf
-  Options:
-    Silent: true
-    PreventOtherDrops: true
-	
-playDamage:
-  Cooldown: 1
-  Skills:
-  - aschange{anim=flip.anim} @self
-  - delay 15
-  - aschange{anim=Example1.anim} @self
-
-makeAttack:
-  Cooldown: 1
-  Skills:
-  - aschange{anim=winke.anim} @self
-  - delay 8
-  - damage{a=0.5} @trigger
-  - delay 8
-  - aschange{anim=Example1.anim} @self
-```
 *** 4.5.2017 update: fixed a server crash exception. some optimization. redid the ASANIMATE mechanic. Now only repeat and delay is needed.
 *** 3.5.2017 update: added some sort of fake ai. use a mythicmob config to fake the ai and change the armorstands behaviors into it.
 *** 3.5.2017 update: added skill "aschange" to change the animation file. see examples
-```
-moonwalker:
-  Type: armor_stand
-  Options:
-    Invincible: true
-    HasArms: true
-    ItemBody: COS_GreenChest
-    ItemFeet: COS_BlueFeet
-    ItemHand: COS_IronSword
-    ItemHead: BlackbeardHead
-    ItemLegs: COS_YellowLegs
-  Skills:
-  - asinit{anim=Example1.anim;mobtype=aimob} @self ~onSpawn
-  - asanimate{r=20;d=0} @self ~onTimer:20
-  - skill{s=makeAttack} @trigger ~onAttack
-  - skill{s=playDamage} @trigger ~onDamaged 
-  - message{msg="You killed me!"} @trigger ~onSignal:DEATH
-  
-aimob:
-  Type: zombie
-  Options:
-    Silent: true
-    PreventOtherDrops: true
-  AIGoalSelectors:
-    - 0 clear
-    - 1 meleeattack
-    - 2 randomstroll
-    - 3 float
-  AITargetSelectors:
-    - 0 clear
-    - 1 players
-
-
-skillfile:
-
-playDamage:
-  Cooldown: 1
-  Skills:
-  - aschange{anim=flip.anim} @self
-  - delay 15
-  - aschange{anim=Example1.anim} @self
-
-makeAttack:
-  Cooldown: 1
-  Skills:
-  - aschange{anim=winke.anim} @self
-  - delay 8
-  - damage{a=0.5} @trigger
-  - delay 8
-  - aschange{anim=Example1.anim} @self
-
-```
 *** 1.4.2017 update: added "executeSkill" option to anim file. If this option is set to a frame, the animatorstand will execute any metaskill if the frame is played. All mm targeters are useable
-```
-Example animfile:
-
-interpolate
-length 16
-frame 0
-Armorstand_Position 0.0 0.0 0.0 0.0
-Armorstand_Middle -1.7735 -1.9591 0
-Armorstand_Right_Leg 0 4.7462 12.0494
-Armorstand_Left_Leg 0 -5.2681 -6.6472
-Armorstand_Left_Arm 6.1476 0 -42.2486
-Armorstand_Right_Arm 0 -3.1448 41.9762
-Armorstand_Head 0 -24.967 -0.4532
-frame 7
-executeSkill particlestest @PIR{r=5}
-Armorstand_Position 0.0 0.0 0.0 0.0
-Armorstand_Middle 0 0 -2.4842
-Armorstand_Right_Leg 0 0 13.5406
-Armorstand_Left_Leg 0 -6.5557 -15.3523
-Armorstand_Left_Arm -8.7445 0 -151.9446
-Armorstand_Right_Arm 10.178 0 154.3655
-Armorstand_Head 9.236 2.7374 -9.5706
-frame 15
-Armorstand_Position 0.0 0.0 0.0 0.0
-Armorstand_Middle -1.7735 -1.9591 0
-Armorstand_Right_Leg 0 4.7462 12.0494
-Armorstand_Left_Leg 0 -5.2681 -6.6472
-Armorstand_Left_Arm 6.1476 0 -42.2486
-Armorstand_Right_Arm 0 -3.1448 41.9762
-Armorstand_Head 0 -24.967 -0.4532
-
-
-Skill file:
-particlestest:
-  Skills:
-  - particles{particle=heart;amount=8;vSpread=0.5;hSpread=0.5;Spped=0.01;yoffset=1}
-```
-
-
 *** 10.3.2017 update: added "Animate_Negate" option for anim files. If this is set all positions of the armorstand (expect the World Position itself) will be negated. For compatibility with some animation programs.
 
 ### How to install?
@@ -166,7 +33,6 @@ This skill will setup the AnimateStand and assign the animation "Example.anim" t
   - asAnimate{r=20;d=0} @self ~onTimer:20 1
 ```
 This skill will now play the animation Example.anim for (r=20) 20 times with a delay of (d=0) 0 ticks per frame. There is an ~onTimer:20 1 trigger which will restart the skill again. The AnimateStand timer should not last longer than the MythicMobs timer. It was nessercary for an buildin Timer because MythicMobs clocks only ticks every 4 ticks. This might be a bit to slow for the animations.
-###### anim or a: again the name of the animation.
 ###### r or repeat: how many times should the animation repeat.
 ###### d or delay: how fast the animation should be played. where 0 is every tick.
 ######
@@ -226,4 +92,135 @@ Rudolf:
     PreventRenaming: true
   Skills:
   - potion{type=INVISIBILITY;duration=4000;level=1} @self ~onSpawn 1
+```
+```
+Example for MOVESTOPP & MOVESTART:
+
+moonwalker:
+  Type: armor_stand
+  Options:
+    Small: true
+    HasArms: true
+    ItemBody: COS_GreenChest
+    ItemFeet: COS_BlueFeet
+    ItemHand: COS_IronSword
+    ItemHead: BlackbeardHead
+    ItemLegs: COS_YellowLegs
+  Skills:
+  - asinit{anim=Example1.anim;mobtype=aimob} @self ~onSpawn
+  - asanimate{r=20;d=0} @self ~onTimer:20
+  - aspause @self ~onSignal:MOVESTOPP
+  - asrun @self ~onSignal:MOVESTART
+  - skill{s=makeAttack} @trigger ~onAttack
+  - skill{s=playDamage} @trigger ~onDamaged 
+  - message{msg="You killed me!"} @trigger ~onSignal:DEATH
+  
+aimob:
+  Type: pigzombie
+  Options:
+    Silent: true
+    PreventOtherDrops: true
+	
+playDamage:
+  Cooldown: 1
+  Skills:
+  - aschange{anim=flip.anim} @self
+  - delay 15
+  - aschange{anim=Example1.anim} @self
+
+makeAttack:
+  Cooldown: 1
+  Skills:
+  - aschange{anim=winke.anim} @self
+  - delay 8
+  - damage{a=0.5} @trigger
+  - delay 8
+  - aschange{anim=Example1.anim} @self
+```
+
+```
+moonwalker:
+  Type: armor_stand
+  Options:
+    HasArms: true
+    ItemBody: COS_GreenChest
+    ItemFeet: COS_BlueFeet
+    ItemHand: COS_IronSword
+    ItemHead: BlackbeardHead
+    ItemLegs: COS_YellowLegs
+  Skills:
+  - asinit{anim=Example1.anim;mobtype=aimob} @self ~onSpawn
+  - asanimate{r=20;d=0} @self ~onTimer:20
+  - skill{s=makeAttack} @trigger ~onAttack
+  - skill{s=playDamage} @trigger ~onDamaged 
+  - message{msg="You killed me!"} @trigger ~onSignal:DEATH
+  
+aimob:
+  Type: pigzombie
+  Options:
+    Silent: true
+    PreventOtherDrops: true
+  AIGoalSelectors:
+    - 0 clear
+    - 1 meleeattack
+    - 2 randomstroll
+    - 3 float
+  AITargetSelectors:
+    - 0 clear
+    - 1 players
+
+skillfile:
+
+playDamage:
+  Cooldown: 1
+  Skills:
+  - aschange{anim=flip.anim} @self
+  - delay 15
+  - aschange{anim=Example1.anim} @self
+
+makeAttack:
+  Cooldown: 1
+  Skills:
+  - aschange{anim=winke.anim} @self
+  - delay 8
+  - damage{a=0.5} @trigger
+  - delay 8
+  - aschange{anim=Example1.anim} @self
+
+```
+```
+Example animfile:
+
+interpolate
+length 16
+frame 0
+Armorstand_Position 0.0 0.0 0.0 0.0
+Armorstand_Middle -1.7735 -1.9591 0
+Armorstand_Right_Leg 0 4.7462 12.0494
+Armorstand_Left_Leg 0 -5.2681 -6.6472
+Armorstand_Left_Arm 6.1476 0 -42.2486
+Armorstand_Right_Arm 0 -3.1448 41.9762
+Armorstand_Head 0 -24.967 -0.4532
+frame 7
+executeSkill particlestest @PIR{r=5}
+Armorstand_Position 0.0 0.0 0.0 0.0
+Armorstand_Middle 0 0 -2.4842
+Armorstand_Right_Leg 0 0 13.5406
+Armorstand_Left_Leg 0 -6.5557 -15.3523
+Armorstand_Left_Arm -8.7445 0 -151.9446
+Armorstand_Right_Arm 10.178 0 154.3655
+Armorstand_Head 9.236 2.7374 -9.5706
+frame 15
+Armorstand_Position 0.0 0.0 0.0 0.0
+Armorstand_Middle -1.7735 -1.9591 0
+Armorstand_Right_Leg 0 4.7462 12.0494
+Armorstand_Left_Leg 0 -5.2681 -6.6472
+Armorstand_Left_Arm 6.1476 0 -42.2486
+Armorstand_Right_Arm 0 -3.1448 41.9762
+Armorstand_Head 0 -24.967 -0.4532
+
+Skill file:
+particlestest:
+  Skills:
+  - particles{particle=heart;amount=8;vSpread=0.5;hSpread=0.5;Spped=0.01;yoffset=1}
 ```

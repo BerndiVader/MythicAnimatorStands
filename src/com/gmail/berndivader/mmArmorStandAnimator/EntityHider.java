@@ -2,29 +2,33 @@ package com.gmail.berndivader.mmArmorStandAnimator;
 
 import static com.comphenix.protocol.PacketType.Play.Server.*;
 
-import java.util.HashSet;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.Plugin;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.adapters.AbstractPlayer;
+import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
+
 public class EntityHider implements Listener {
-    protected HashSet<Integer> EntityMap = new HashSet<>();
-    @SuppressWarnings("deprecation")
+    protected HashMap<Integer,UUID> EntityMap = new HashMap<>();
     
-    private static final PacketType[] ENTITY_PACKETS = {
-            ENTITY_EQUIPMENT, BED, ANIMATION, NAMED_ENTITY_SPAWN,
+    @SuppressWarnings("deprecation")
+	private static final PacketType[] ENTITY_PACKETS = {
+    		HELD_ITEM_SLOT, POSITION,
+    		SPAWN_ENTITY, ENTITY_EQUIPMENT, BED, ANIMATION, NAMED_ENTITY_SPAWN,
             COLLECT, SPAWN_ENTITY, SPAWN_ENTITY_LIVING, SPAWN_ENTITY_PAINTING, SPAWN_ENTITY_EXPERIENCE_ORB,
             ENTITY_VELOCITY, REL_ENTITY_MOVE, ENTITY_LOOK, ENTITY_MOVE_LOOK, ENTITY_MOVE_LOOK,
             ENTITY_TELEPORT, ENTITY_HEAD_ROTATION, ENTITY_STATUS, ATTACH_ENTITY, ENTITY_METADATA,
@@ -36,40 +40,25 @@ public class EntityHider implements Listener {
     
     public EntityHider(Plugin plugin) {
         this.manager = ProtocolLibrary.getProtocolManager(); 
-        plugin.getServer().getPluginManager().registerEvents(bukkitListener = constructBukkit(), plugin);
         manager.addPacketListener(protocolListener = constructProtocol(plugin));
     }
     
     public void hideEntity(Entity entity) {
-    	EntityMap.add(entity.getEntityId());
+    	EntityMap.put(entity.getEntityId(),entity.getUniqueId());
+        PacketContainer e1 = new PacketContainer(ENTITY_DESTROY);
+        e1.getIntegerArrays().write(0, new int[] { entity.getEntityId() });
+    	for (AbstractPlayer p : MythicMobs.inst().getEntityManager().getPlayersInRangeSq(BukkitAdapter.adapt(entity.getLocation()), 16000)) {
+    		try {
+                manager.sendServerPacket(BukkitAdapter.adapt(p), e1);
+        	} catch (InvocationTargetException e) {
+        		//
+        	}
+        }
         return;
     }
     
     public void removeEntity(Entity entity) {
-    	EntityMap.remove(entity.getUniqueId());
-    }
-    
-    private Listener constructBukkit() {
-        return new Listener() {
-            @EventHandler
-            public void onEntityDeath(EntityDeathEvent e) {
-                removeEntity(e.getEntity());
-            }
-            
-            @EventHandler
-            public void onChunkUnload(ChunkUnloadEvent e) {
-                for (Entity entity : e.getChunk().getEntities()) {
-                    removeEntity(entity);
-                }
-            }
-            @EventHandler
-            public void onChunkLoad(ChunkLoadEvent e) {
-                for (Entity entity : e.getChunk().getEntities()) {
-                    hideEntity(entity);
-                }
-            }
-            
-        };
+    	EntityMap.remove(entity.getEntityId(),entity.getUniqueId());
     }
     
     private PacketAdapter constructProtocol(Plugin plugin) {
@@ -78,7 +67,7 @@ public class EntityHider implements Listener {
             public void onPacketSending(PacketEvent event) {
             	int index = event.getPacketType() == COMBAT_EVENT ? 1 : 0;
             	int id = event.getPacket().getIntegers().readSafely(index);
-               	if (EntityMap.contains(id)) {
+               	if (EntityMap.containsKey(id)) {
            			event.setCancelled(true);
                	}
             }
