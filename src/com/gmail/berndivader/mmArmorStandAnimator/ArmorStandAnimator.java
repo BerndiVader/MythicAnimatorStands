@@ -105,37 +105,13 @@ public class ArmorStandAnimator {
 	}
 	
 	public void reAttachAIMob() {
-		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
-		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
-		String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
-		String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
-        aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
-        aiMob.getLivingEntity().setMetadata("aiMob1", new FixedMetadataValue(main.inst(),u2));
-		Bukkit.getScheduler().runTaskLater(main.inst(), new Runnable() {
-			@Override
-			public void run() {
-				ActiveMob aim = MythicMobs.inst().getAPIHelper().getMythicMobInstance(aiMob.getLivingEntity());
-				aim.getLivingEntity().setCanPickupItems(false);
-			}
-		}, 15);
+		this.createAIMob();
 	}
 	
 	private void attachToAIMob() {
 		if (this.aiMob!=null && !this.aiMob.isDead()) return;
-		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
-		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
-		String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
-		String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
-        aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
-        aiMob.getLivingEntity().setMetadata("aiMob1", new FixedMetadataValue(main.inst(),u2));
+		this.createAIMob();
         ArmorStandAnimator asa = this;
-		Bukkit.getScheduler().runTaskLater(main.inst(), new Runnable() {
-			@Override
-			public void run() {
-				ActiveMob aim = MythicMobs.inst().getAPIHelper().getMythicMobInstance(aiMob.getLivingEntity());
-				aim.getLivingEntity().setCanPickupItems(false);
-			}
-		}, 15);
 		task = Bukkit.getScheduler().runTaskTimer(main.inst(), new Runnable() {
             @Override
             public void run() {
@@ -187,6 +163,25 @@ public class ArmorStandAnimator {
        }, 1, 1);
 	}
 	
+	private void createAIMob() {
+		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
+		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
+		String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
+		String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
+        aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
+        aiMob.getLivingEntity().setMetadata("aiMob1", new FixedMetadataValue(main.inst(),u2));
+		Bukkit.getScheduler().runTaskLater(main.inst(), new Runnable() {
+			@Override
+			public void run() {
+				ActiveMob aim = MythicMobs.inst().getAPIHelper().getMythicMobInstance(aiMob.getLivingEntity());
+				if (aim!=null) {
+					aim.getLivingEntity().setNoDamageTicks(20);
+					aim.getLivingEntity().setCanPickupItems(false);
+				}
+			}
+		}, 15);
+	}
+
 	public void changeAnim(File aniFile) {
 		this.stop();
 		this.aniFile = aniFile;
