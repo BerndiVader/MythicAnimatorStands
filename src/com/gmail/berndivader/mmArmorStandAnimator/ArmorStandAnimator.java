@@ -37,64 +37,40 @@ import io.lumine.xikage.mythicmobs.skills.targeters.MTTriggerLocation;
 
 public class ArmorStandAnimator {
 	private static NMSUtils nmsutils = main.NMSUtils();
-	/**
-	 * This is a map containing the already loaded frames. This way we don't have to parse the same animation over and over.
-	 */
 	private static Map<String, Frame[]> animCache = new HashMap<String, Frame[]>();
-	/**
-	 * This is a list with all the animator instances. This makes it easy to update all the instances at one.
-	 */
-	private static Set<ArmorStandAnimator> animators = new HashSet<ArmorStandAnimator>();
+	public static Set<ArmorStandAnimator> animators = new HashSet<ArmorStandAnimator>();
 
-	/** This void updates all the animator instances at once */
 	public static void updateAll() {
 		for (ArmorStandAnimator ani : animators) {
 			ani.update();
 		}
 	}
 
-	/** Returns all the animator instances */
 	public static Set<ArmorStandAnimator> getAnimators() {
 		return animators;
 	}
 
-	/** Clears the animation cache in case you want to update an animation */
 	public static void clearCache() {
 		animCache.clear();
 	}
 
-	/** The armor stand to animate */
 	private ArmorStand armorStand;
-	/** The amount of frames this animation has */
 	private int length;
-	/** All the frames of the animation */
 	private Frame[] frames;
-	/** Says when the animation is paused */
 	private boolean paused = false;
-	/** The current frame we're on */
 	private int currentFrame;
-	/** The start location of the animation */
 	private Location startLocation;
-	/** If this is true. The animator is going to guess the frames that aren't specified */
 	private boolean interpolate = true;
-	/** If this is true. The values of the frames will be negated. */
 	private boolean negated = false;
-	/** If true the ArmorStand will auto init the animator again if its destroyed. */
 	private boolean autoInit = false;
-	private String aiMobName;
+	public String aiMobName;
 	private File aniFile;
-	private ActiveMob am,aiMob;
+	public ActiveMob am,aiMob;
 	private BukkitTask task;
 	private double mcheck;
 	private int lastaction;
-	/**
-	 * Constructor of the animator. Takes in the path to the file with the animation and the armor stand to animate.
-	 * 
-	 * @param aniFile
-	 * @param armorStand
-	 */
+	
 	public ArmorStandAnimator(File aniFile, ArmorStand armorStand, Object oi, Object mobtype) {
-		// set all the stuff
 		this.aniFile = aniFile;
 		this.armorStand = armorStand;
 		startLocation = armorStand.getLocation();
@@ -105,13 +81,10 @@ public class ArmorStandAnimator {
 			this.attachToAIMob();
 		}
 		this.loadFrames();
-		// register this instance of the animator
 		animators.add(this);
 		this.checkMovement();
 	}
-	/**
-	 * check for move trigger
-	 */
+	
 	public int checkMovement() {
 		int action = 0;
 		double chk=this.armorStand.getLocation().getX()
@@ -131,14 +104,12 @@ public class ArmorStandAnimator {
 		}
 		return action;
 	}
-	/**
-	 * create the aiMob for the ArmorStand
-	 */
-	private void attachToAIMob() {
-		if (this.aiMob!=null && !this.aiMob.isDead()) return;
+	
+	public void reAttachAIMob() {
 		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
-		PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 2, false, false);
+		PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 4, false, false);
 		this.aiMob.getLivingEntity().addPotionEffect(pe);
+//		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
 		String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
 		String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
         aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
@@ -146,33 +117,74 @@ public class ArmorStandAnimator {
 		Bukkit.getScheduler().runTaskLater(main.inst(), new Runnable() {
 			@Override
 			public void run() {
-				aiMob.getLivingEntity().addPotionEffect(pe);
+				ActiveMob aim = MythicMobs.inst().getAPIHelper().getMythicMobInstance(aiMob.getLivingEntity());
+				PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 4, false, false);
+				aim.getLivingEntity().addPotionEffect(pe);
 				armorStand.setInvulnerable(true);
-				aiMob.getLivingEntity().setCanPickupItems(false);
-				aiMob.getLivingEntity().getEquipment().clear();
+				aim.getLivingEntity().setCanPickupItems(false);
+				aim.getLivingEntity().getEquipment().clear();
 			}
-		}, 2);
+		}, 15);
+	}
+	
+	private void attachToAIMob() {
+		if (this.aiMob!=null && !this.aiMob.isDead()) return;
+		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
+//		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
+		PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 4, false, false);
+		this.aiMob.getLivingEntity().addPotionEffect(pe);
+		String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
+		String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
+        aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
+        aiMob.getLivingEntity().setMetadata("aiMob1", new FixedMetadataValue(main.inst(),u2));
+        ArmorStandAnimator asa = this;
+		Bukkit.getScheduler().runTaskLater(main.inst(), new Runnable() {
+			@Override
+			public void run() {
+				ActiveMob aim = MythicMobs.inst().getAPIHelper().getMythicMobInstance(aiMob.getLivingEntity());
+				PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 4, false, false);
+				aim.getLivingEntity().addPotionEffect(pe);
+				armorStand.setInvulnerable(true);
+				aim.getLivingEntity().setCanPickupItems(false);
+				aim.getLivingEntity().getEquipment().clear();
+			}
+		}, 15);
 		task = Bukkit.getScheduler().runTaskTimer(main.inst(), new Runnable() {
             @Override
             public void run() {
-            	if (aiMob.isDead() || armorStand.isDead()) {
-            		aiMob.getEntity().remove();
+            	ActiveMob aim = MythicMobs.inst().getMobManager().getMythicMobInstance(aiMob.getEntity());
+            	ActiveMob aam = MythicMobs.inst().getMobManager().getMythicMobInstance(am.getEntity());
+            	if (aam==null) {
+            		if (aim!=null) aim.getEntity().remove();
+            		armorStand.remove();
+            		asa.remove();
+            		Bukkit.getScheduler().cancelTask(task.getTaskId());
+            		return;
+            	}
+            	if (aim==null) return;
+            	if (aim.isDead() || aam.isDead()) {
+            		asa.remove();
+            		aim.setDead();
             		armorStand.remove();
             		Bukkit.getScheduler().cancelTask(task.getTaskId());
             	} else {
+            		if (!aim.getLivingEntity().hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+        				PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 999999999, 4, false, false);
+        				aim.getLivingEntity().addPotionEffect(pe);
+            		}
 					int check = checkMovement();
 					if (check==1) {
-						am.signalMob(null, "MOVESTART");
+						aam.signalMob(null, "MOVESTART");
 					} else if (check==2) {
-						am.signalMob(null, "MOVESTOPP");
+						aam.signalMob(null, "MOVESTOPP");
 					}
-					float y = aiMob.getEntity().getLocation().getYaw();
-					float p = aiMob.getEntity().getLocation().getPitch();
+					float y = aim.getEntity().getLocation().getYaw();
+					float p = aim.getEntity().getLocation().getPitch();
 					Location l=null;
-					if (lastaction==2 && aiMob.hasTarget()) {
-						l = ArmorStandUtils.lookAt(armorStand.getLocation(), aiMob.getEntity().getTarget().getBukkitEntity().getLocation());
+					if (lastaction==2 && aim.hasTarget()) {
+						l = ArmorStandUtils.lookAt(armorStand.getLocation(), aim.getEntity().getTarget().getBukkitEntity().getLocation());
 					} else {
-						Location ll = ArmorStandUtils.getTargetBlock(aiMob.getLivingEntity(), 10);
+						Location ll = ArmorStandUtils.getTargetBlock(aim.getLivingEntity(), 10);
 						if (ll!=null) {
 							l = ArmorStandUtils.lookAt(armorStand.getLocation(),ll);
 						}
@@ -182,19 +194,16 @@ public class ArmorStandAnimator {
 						p = l.getPitch();
 					}
 					nmsutils.SetNMSLocation(armorStand,
-							aiMob.getEntity().getLocation().getX(),
-							aiMob.getEntity().getLocation().getY(),
-							aiMob.getEntity().getLocation().getZ(),
+							aim.getEntity().getLocation().getX(),
+							aim.getEntity().getLocation().getY(),
+							aim.getEntity().getLocation().getZ(),
 							y,
 							p);
 				}
             }
        }, 1, 1);
 	}
-	/**
-	 * Change the Animation of the AnimatorStand
-	 * @param aniFile
-	 */
+	
 	public void changeAnim(File aniFile) {
 		this.stop();
 		this.aniFile = aniFile;
@@ -203,7 +212,6 @@ public class ArmorStandAnimator {
 	}
 
 	private void loadFrames() {
-		// checks if the file has been loaded before. If so return the cached version
 		if (animCache.containsKey(this.aniFile.getAbsolutePath())) {
 			frames = new Frame[animCache.get(aniFile.getAbsolutePath()).length];
 			frames = animCache.get(aniFile.getAbsolutePath());
@@ -212,7 +220,6 @@ public class ArmorStandAnimator {
 			this.paused=false;
 			this.negated=false;
 		} else {
-			// File has not been loaded before so load it.
 			BufferedReader br = null;
 			try {
 				br = new BufferedReader(new FileReader(aniFile));
@@ -229,7 +236,6 @@ public class ArmorStandAnimator {
 					} else if (line.startsWith("Animator_Auto_Init")) {
 						this.autoInit = true;
 					}
-					// sets the current frame
 					else if (line.startsWith("frame")) {
 						if (currentFrame != null) {
 							frames[currentFrame.frameID] = currentFrame;
@@ -238,14 +244,12 @@ public class ArmorStandAnimator {
 						currentFrame = new Frame();
 						currentFrame.frameID = frameID;
 					}
-					// sets the position and rotation or the main armor stand
 					else if (line.contains("Armorstand_Position")) {
 						currentFrame.x = Float.parseFloat(line.split(" ")[1]);
 						currentFrame.y = Float.parseFloat(line.split(" ")[2]);
 						currentFrame.z = Float.parseFloat(line.split(" ")[3]);
 						currentFrame.r = Float.parseFloat(line.split(" ")[4]);
 					}
-					// sets the rotation for the middle
 					else if (line.contains("Armorstand_Middle")) {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
@@ -255,7 +259,6 @@ public class ArmorStandAnimator {
 						}
 						currentFrame.middle = new EulerAngle(x, y, z);
 					}
-					// sets the rotation for the right leg
 					else if (line.contains("Armorstand_Right_Leg")) {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
@@ -265,7 +268,6 @@ public class ArmorStandAnimator {
 						}
 						currentFrame.rightLeg = new EulerAngle(x, y, z);
 					}
-					// sets the rotation for the left leg
 					else if (line.contains("Armorstand_Left_Leg")) {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
@@ -275,7 +277,6 @@ public class ArmorStandAnimator {
 						}
 						currentFrame.leftLeg = new EulerAngle(x, y, z);
 					}
-					// sets the rotation for the left arm
 					else if (line.contains("Armorstand_Left_Arm")) {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
@@ -285,7 +286,6 @@ public class ArmorStandAnimator {
 						}
 						currentFrame.leftArm = new EulerAngle(x, y, z);
 					}
-					// sets the rotation for the right arm
 					else if (line.contains("Armorstand_Right_Arm")) {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
@@ -295,7 +295,6 @@ public class ArmorStandAnimator {
 						}
 						currentFrame.rightArm = new EulerAngle(x, y, z);
 					}
-					// sets the rotation for the head
 					else if (line.contains("Armorstand_Head")) {
 						float x = (float) Math.toRadians(Float.parseFloat(line.split(" ")[1]));
 						float y = (float) Math.toRadians(Float.parseFloat(line.split(" ")[2]));
@@ -314,7 +313,6 @@ public class ArmorStandAnimator {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			} finally {
-				// make sure to close the stream!
 				if (br != null) {
 					try {
 						br.close();
@@ -323,63 +321,44 @@ public class ArmorStandAnimator {
 					}
 				}
 			}
-			// add the animation to the cache, else adding the whole cache thing has no point.
 			frames[0].autoInit=this.autoInit;
 			frames[0].aiMobName=this.aiMobName;
 			animCache.put(aniFile.getAbsolutePath(), frames);
 		}
 	}
 	
-	/**
-	 * This method removes this instance from the animator instances list. When you don't want to use this instance any more, you can call this method.
-	 */
 	public void remove() {
 		animators.remove(this);
-		if (this.aiMob!=null && !this.aiMob.getEntity().isDead()) {
+		if (this.aiMob!=null && !this.aiMob.isDead()) {
 			this.aiMob.getEntity().remove();
 		}
 	}
 
-	/** Pauses the animation */
 	public void pause() {
 		paused = true;
 	}
 
-	/**
-	 * Pauses the animation and sets the current frame to 0. It also updates the animation one more time to set the armor stand to the first frame.
-	 */
 	public void stop() {
-		// set the current frame to 0 and update the frame and set it to 0 again
 		currentFrame = 0;
 		update();
 		currentFrame = 0;
 		paused = true;
 	}
 
-	/** Plays the animation */
 	public void play() {
 		paused = false;
 	}
 
-	/** Updates the animation and goes to the next frame */
 	public void update() {
-		// make sure that the animation isn't paused
 		if (!paused) {
-			// makes sure that the frame is in bounds
 			if (currentFrame >= (length - 1) || currentFrame < 0) {
 				currentFrame = 0;
 			}
-			// get the frame
 			Frame f = frames[currentFrame];
-			//checks if we need to interpolate. If so interpolate.
 			if(f == null) f = interpolate(currentFrame);
-			// make sure it's not null
 			if (f != null) {
-				// get Entity instance for vehicle check
 				Entity e = armorStand;
-				// check for vehicle
 				if (e.getVehicle()==null) {
-					// get the new location
 					if (this.aiMob==null) {
 						Location newLoc = startLocation.clone().add(f.x, f.y, f.z);
 						newLoc.setYaw(f.r + newLoc.getYaw());
@@ -392,7 +371,6 @@ public class ArmorStandAnimator {
 					zz = e.getVehicle().getLocation().getZ();
 					nmsutils.SetNMSLocation(e.getVehicle(), xx, yy, zz, e.getVehicle().getLocation().getYaw()+f.r, e.getVehicle().getLocation().getPitch());
 				}
-				// set all the values
 				armorStand.setBodyPose(f.middle);
 				armorStand.setLeftLegPose(f.leftLeg);
 				armorStand.setRightLegPose(f.rightLeg);
@@ -400,10 +378,8 @@ public class ArmorStandAnimator {
 				armorStand.setRightArmPose(f.rightArm);
 				armorStand.setHeadPose(f.head);
 				
-				//check for skill in frame:
 				if (f.doSkill!=null) executeMythicMobsSkill(f.doSkill);
 			}
-			// go one frame higher
 			currentFrame++;
 		}
 	}
@@ -454,50 +430,38 @@ public class ArmorStandAnimator {
         if (skill.usable(data, SkillTrigger.API)) skill.execute(data);
 	}
 
-	/** Returns the current frame */
 	public int getCurrentFrame() {
 		return currentFrame;
 	}
-	/** Returns the skill to execute after this frame */
+	
 	public String checkForSkill() {
 		return this.frames[this.currentFrame].doSkill;
 	}
 
-	/** Sets the current frame */
 	public void setCurrentFrame(int currentFrame) {
 		this.currentFrame = currentFrame;
 	}
 
-	/** Returns the armor stand this instance animates */
 	public ArmorStand getArmorStand() {
 		return armorStand;
 	}
 
-	/** Returns the amount of frame this animation has */
 	public int getLength() {
 		return length;
 	}
 
-	/** Returns the list of frames */
 	public Frame[] getFrames() {
 		return frames;
 	}
 
-	/** Returns if the animation is paused */
 	public boolean isPaused() {
 		return paused;
 	}
 
-	/** Gets the start location */
 	public Location getStartLocation() {
 		return startLocation;
 	}
 
-	/**
-	 * Sets the start location. If you want to teleport the armor stand this is the recommended function
-	 * 
-	 * @param location
-	 */
 	public void setStartLocation(Location location) {
 		if (this.armorStand.getVehicle()==null) {
 			startLocation = location;
@@ -506,19 +470,15 @@ public class ArmorStandAnimator {
 		}
 	}
 
-	/** Returns interpolate */
 	public boolean isInterpolated() {
 		return interpolate;
 	}
 
-	/** Sets interpolate */
 	public void setInterpolated(boolean interpolate) {
 		this.interpolate = interpolate;
 	}
 
-	/**Returns an interpolated frame*/
 	private Frame interpolate(int frameID) {
-		//get the minimum and maximum frames that are the closest
 		Frame minFrame = null;
 		for (int i = frameID; i >= 0; i--) {
 			if (frames[i] != null) {
@@ -533,9 +493,7 @@ public class ArmorStandAnimator {
 				break;
 			}
 		}
-		//make sure that those frame weren't the last one
 		Frame res = null;
-
 		if(maxFrame == null || minFrame == null) {
 			if(maxFrame == null && minFrame != null) {
 				return minFrame;
@@ -547,11 +505,8 @@ public class ArmorStandAnimator {
 			res.frameID = frameID;
 			return res;
 		}
-		//create the frame and interpolate
 		res = new Frame();
 		res.frameID = frameID;
-
-		//this part calculates the distance the current frame is from the minimum and maximum frame and this allows for an easy linear interpolation
 		float Dmin = frameID - minFrame.frameID;
 		float D = maxFrame.frameID - minFrame.frameID;
 		float D0 = Dmin / D;
@@ -559,33 +514,19 @@ public class ArmorStandAnimator {
 		return res;
 	}
 
-	/**
-	 * The frame class. This class holds all the information of one frame.
-	 */
 	public static class Frame {
-		/**The Frame ID*/
 		int frameID;
-		/**MythicMob aiMob*/
 		String aiMobName;
-		/**do a skill at this frame*/
 		String doSkill;
-		/**AutoInit after AnimatorInstance destroyed*/
 		boolean autoInit;
-		/**the location and rotation and pitch*/
 		float x, y, z, r, p;
-		/**The rotation of the body parts*/
 		EulerAngle middle;
 		EulerAngle rightLeg;
 		EulerAngle leftLeg;
 		EulerAngle rightArm;
 		EulerAngle leftArm;
 		EulerAngle head;
-		/**This multiplies every value with another value.
-		 * Used for interpolation
-		 * @param a
-		 * @param frameID
-		 * @return
-		 */
+		
 		public Frame mult(float a, int frameID) {
 			Frame f = new Frame();
 			f.frameID = frameID;
@@ -601,12 +542,7 @@ public class ArmorStandAnimator {
 			f.head = new EulerAngle(head.getX() * a, head.getY() * a, head.getZ() * a);
 			return f;
 		}
-		/**This adds a value to every value.
-		 * Used for interpolation
-		 * @param a
-		 * @param frameID
-		 * @return
-		 */
+		
 		public Frame add(Frame a, int frameID) {
 			Frame f = new Frame();
 			f.frameID = frameID;

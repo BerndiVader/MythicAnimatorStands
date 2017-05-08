@@ -26,7 +26,7 @@ import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
 import io.lumine.xikage.mythicmobs.skills.TriggeredSkill;
 
 public class mmMythicMobsEvents implements Listener {
-
+	
 	public mmMythicMobsEvents() {
 		Bukkit.getServer().getPluginManager().registerEvents(this, main.inst());
 	}
@@ -73,6 +73,9 @@ public class mmMythicMobsEvents implements Listener {
 		if (!e.getEntity().hasMetadata("aiMob")) return;
 		UUID u = this.getUUIDbyMeta(e.getEntity());
         ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(u).get();
+        ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(am.getEntity());
+        asa.stop();
+        asa.remove();
         am.signalMob(BukkitAdapter.adapt(e.getKiller()), "DEATH");
 	}
 	

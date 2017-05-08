@@ -1,8 +1,11 @@
 package com.gmail.berndivader.mmArmorStandAnimator;
 
+import java.util.Iterator;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.gmail.berndivader.mmArmorStandAnimator.NMS.*;
 
@@ -12,6 +15,8 @@ public class main extends JavaPlugin {
 	private static int mmVer;
 	private static String strMMVer;
 	private static NMSUtils nmsutils;
+	private static EntityHider entityhider;
+	public static EntityHider getEntityHider() {return entityhider;}
 	public static NMSUtils NMSUtils() {return nmsutils;}
 	
 	@Override
@@ -32,11 +37,26 @@ public class main extends JavaPlugin {
 		}
 		getNMSUtil();
 		new mmMythicMobsEvents();
+		//entityhider = new EntityHider(this);
+
+		new BukkitRunnable() {
+    		public void run() {
+    			Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator();
+    			while (it.hasNext()) {
+    				ArmorStandAnimator asa = it.next();
+    				if (asa!=null) {
+    					if (asa.getArmorStand()==null || asa.getArmorStand().isDead()) it.remove();
+    				} else {
+    					it.remove();
+    				}
+    			}
+            }
+        }.runTaskTimerAsynchronously(this, 20L, 20L);
+        
 	}
 
 	@Override
 	public void onDisable() {
-		
 	}
 
 	public static Plugin inst() {

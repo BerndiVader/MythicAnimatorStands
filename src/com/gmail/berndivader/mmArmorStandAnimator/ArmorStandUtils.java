@@ -8,8 +8,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
@@ -22,6 +24,11 @@ public class ArmorStandUtils {
 	public static boolean animateArmorStand(AbstractEntity entity, int repeat, int delay) {
 		ArmorStandAnimator asa=getAnimatorInstance(entity);
 		if (asa!=null) {
+			if (asa.aiMobName!=null && asa.aiMob.getEntity().isDead()) {
+				if (checkForNearByPlayers(entity.getBukkitEntity(), 16000.0D)) {
+					asa.reAttachAIMob();
+				}
+			}
 			ArmorStand as = asa.getArmorStand();
 			final ArmorStandAnimator aa = asa;
 			new BukkitRunnable() {
@@ -41,6 +48,14 @@ public class ArmorStandUtils {
 		return false;
 	}
 	
+	private static boolean checkForNearByPlayers(Entity entity, double r) {
+        for (Player p : entity.getWorld().getPlayers()) {
+            if (p.getLocation().distanceSquared(entity.getLocation()) >= r) continue;
+            return true;
+        }
+		return false;
+	}
+
 	public static boolean changeAnimation(AbstractEntity entity, String animFile) {
 		ArmorStandAnimator asa  = getAnimatorInstance(entity);
 		if (asa!=null) {
@@ -167,4 +182,5 @@ public class ArmorStandUtils {
 		}
 		return match?asa:null;
 	}
+	
 }
