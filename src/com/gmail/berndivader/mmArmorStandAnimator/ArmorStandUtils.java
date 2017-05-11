@@ -1,7 +1,6 @@
 package com.gmail.berndivader.mmArmorStandAnimator;
 
 import java.io.File;
-import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -56,12 +54,12 @@ public class ArmorStandUtils {
 		return false;
 	}
 
-	public static boolean changeAnimation(AbstractEntity entity, String animFile) {
+	public static boolean changeAnimation(AbstractEntity entity, String animFile, int animSpeed) {
 		ArmorStandAnimator asa  = getAnimatorInstance(entity);
 		if (asa!=null) {
 			try {
 				File f = new File(MythicMobs.inst().getDataFolder()+"\\Anims", animFile);
-				asa.changeAnim(f);
+				asa.changeAnim(f, animSpeed);
 			} catch (Exception e) {
 				Bukkit.getLogger().warning("Could not load animation: " + animFile);
 				return false;
@@ -71,7 +69,7 @@ public class ArmorStandUtils {
 		return false;
 	}
 	
-	public static boolean initArmorStandAnim(ActiveMob am, String file, boolean base, Object oi, Object mobtype) {
+	public static boolean initArmorStandAnim(ActiveMob am, String file, boolean base, int animSpeed, Object oi, Object mobtype) {
 		AbstractEntity target = am.getEntity();
 		if (!(target.getBukkitEntity() instanceof ArmorStand)) return false;
 		ArmorStand as = (ArmorStand)target.getBukkitEntity();
@@ -82,7 +80,7 @@ public class ArmorStandUtils {
 		};
 		try {
 			File f = new File(MythicMobs.inst().getDataFolder()+"\\Anims", file);
-			asa = new ArmorStandAnimator(f, as, oi, mobtype);
+			asa = new ArmorStandAnimator(f, as, animSpeed, oi, mobtype);
 			asa.setStartLocation(as.getLocation());
 			as.setBasePlate(base);
 		} catch (Exception e) {
@@ -168,19 +166,7 @@ public class ArmorStandUtils {
     }	
 	
 	public static ArmorStandAnimator getAnimatorInstance(AbstractEntity entity) {
-		if (!entity.getBukkitEntity().getType().equals(EntityType.ARMOR_STAND)) return null;
-		ArmorStand as = (ArmorStand)entity.getBukkitEntity();
-		ArmorStandAnimator asa=null;
-		Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator();
-		boolean match=false;
-		while (it.hasNext()) {
-			asa = it.next();
-			if (as.getUniqueId()==asa.getArmorStand().getUniqueId()) {
-				match=true;
-				break;
-			}
-		}
-		return match?asa:null;
+		return ArmorStandAnimator.getAnimatorByUUID(entity.getUniqueId());
 	}
 	
 }

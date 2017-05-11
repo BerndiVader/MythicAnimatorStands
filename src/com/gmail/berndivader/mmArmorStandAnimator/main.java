@@ -18,8 +18,10 @@ public class main extends JavaPlugin {
 	private static String strMMVer;
 	private static NMSUtils nmsutils;
 	private static EntityHider entityhider;
+	private static AnimatorClock clock;
 	public static EntityHider getEntityHider() {return entityhider;}
 	public static NMSUtils NMSUtils() {return nmsutils;}
+	public static AnimatorClock getClock() {return clock;}
 	
 	@Override
 	public void onEnable() {
@@ -40,7 +42,8 @@ public class main extends JavaPlugin {
 		getNMSUtil();
 		new mmMythicMobsEvents();
 		entityhider = new EntityHider(this);
-
+		clock = new AnimatorClock();
+		
 		new BukkitRunnable() {
     		public void run() {
     			Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator();

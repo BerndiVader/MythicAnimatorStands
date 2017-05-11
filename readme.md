@@ -1,6 +1,9 @@
 # AnimateStands 4 MythicMobs
 #####build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires ProtocolLib & MythicMobs 4.0.0 or higher
 
+
+** 11.5.2017 update 0.42a: matured the code. dropped asanim and none aiMob. added animspeed to asinit mechanic. 
+#####
 *** 8.5.2017 update 0.41a: now using ProtocolLib. 
 #####
 *** 7.5.2017 update 0.40a: some major changes & bugfixes. Added depend to ProtocolLib for PacketEvent
@@ -30,26 +33,21 @@ Stop your server and copy the mmArmorStandAnimator.jar file into your plugins fo
 ###Init the MythicMob:
 The first thing to do is, initialize the MythicMobs as an AnimateStand. This can be done with the skill 
 ```
-- asInit{anim=Example.anim;plate=false} @self ~onSpawn 1
+- asInit{anim=Example.anim;plate=false;mobtype=mythicmob} @self ~onSpawn 1
 ```
 This skill will setup the AnimateStand and assign the animation "Example.anim" to it. The option plate is optional. If false the armorstand will have no plate. The animation will only be loaded if it wasnt already cached befor. Now the mob is ready to be animated.
 #### anim, or a = filename. The animfile have to be in the folder MythicMobs/Anims/Filename.anim
 #### plate or base: true if the armorstand have a baseplate or false if not.
-######
-###Animate the MythicMob:
-```
-  - asAnimate{r=20;d=0} @self ~onTimer:20 1
-```
-This skill will now play the animation Example.anim for (r=20) 20 times with a delay of (d=0) 0 ticks per frame. There is an ~onTimer:20 1 trigger which will restart the skill again. The AnimateStand timer should not last longer than the MythicMobs timer. It was nessercary for an buildin Timer because MythicMobs clocks only ticks every 4 ticks. This might be a bit to slow for the animations.
-###### r or repeat: how many times should the animation repeat.
-###### d or delay: how fast the animation should be played. where 0 is every tick.
+#### mobtype: the mythicmob used for the ai. (required)
+#### animspeed: the delay in ticks
 ######
 ###Change animation for the AnimatorStand:
 ```
-  - aschange{anim=flip.anim} @self
+  - aschange{anim=flip.anim;animspeed=xx} @self
 ```
 This skill allows to change the animation. Useful for different animations on different events like damage attack and that stuff.
 ###### anim or a: filename of the new animation.
+###### animspeed: the dealy in ticks
 ######
 ### Pause the AnimateStand:
 With this skill you can pause the animation.

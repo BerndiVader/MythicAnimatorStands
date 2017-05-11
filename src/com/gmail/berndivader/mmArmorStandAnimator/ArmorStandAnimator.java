@@ -8,13 +8,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.EulerAngle;
 
 import com.gmail.berndivader.mmArmorStandAnimator.NMS.NMSUtils;
@@ -36,7 +36,8 @@ import io.lumine.xikage.mythicmobs.skills.targeters.MTTriggerLocation;
 public class ArmorStandAnimator {
 	private static NMSUtils nmsutils = main.NMSUtils();
 	private static Map<String, Frame[]> animCache = new HashMap<String, Frame[]>();
-	public static Set<ArmorStandAnimator> animators = new HashSet<ArmorStandAnimator>();
+	public static HashSet<ArmorStandAnimator> animators = new HashSet<ArmorStandAnimator>();
+	public static HashMap<UUID,ArmorStandAnimator> anims = new HashMap<UUID,ArmorStandAnimator>();
 
 	public static void updateAll() {
 		for (ArmorStandAnimator ani : animators) {
@@ -47,11 +48,113 @@ public class ArmorStandAnimator {
 	public static Set<ArmorStandAnimator> getAnimators() {
 		return animators;
 	}
-
+	
+	public static ArmorStandAnimator getAnimatorByUUID(UUID uuid) {
+		if (anims.containsKey(uuid)) {
+			return anims.get(uuid);
+		}
+		return null;
+	}
+	
 	public static void clearCache() {
 		animCache.clear();
 	}
 
+	private static void executeMythicMobsSkill(ArmorStandAnimator asa, String skillName) {
+		if (asa.am==null) return;
+	    Optional<SkillTargeter> maybeTargeter = Optional.empty();
+        SkillMetadata data = new SkillMetadata(SkillTrigger.API, asa.am, asa.am.getEntity(), asa.am.getLocation(), null, null, 1.0f);
+	    String target = null;
+	    String sname = skillName.split(" ")[0];
+	    if (skillName.contains("@")) {
+	    	String[] split = skillName.split("@");
+	    	target = "@"+split[1].split(" ")[0];
+	    	maybeTargeter = Optional.of(AbstractSkill.parseSkillTargeter(target));
+	    }
+	    if (maybeTargeter.isPresent()) {
+            SkillTargeter targeter = maybeTargeter.get();
+            if (targeter instanceof IEntitySelector) {
+                data.setEntityTargets(((IEntitySelector)targeter).getEntities(data));
+                ((IEntitySelector)targeter).filter(data, false);
+            }
+            if (targeter instanceof ILocationSelector) {
+                data.setLocationTargets(((ILocationSelector)targeter).getLocations(data));
+                ((ILocationSelector)targeter).filter(data);
+            } else if (targeter instanceof MTOrigin) {
+                data.setLocationTargets(((MTOrigin)targeter).getLocation(data.getOrigin()));
+            } else if (targeter instanceof MTTriggerLocation) {
+                HashSet<AbstractLocation> lTargets = new HashSet<AbstractLocation>();
+                lTargets.add(data.getTrigger().getLocation());
+                data.setLocationTargets(lTargets);
+            }
+            if (targeter instanceof ConsoleTargeter) {
+                data.setEntityTargets(null);
+                data.setLocationTargets(null);
+            }
+        } else {
+        	if (asa.am.hasThreatTable()) {
+        		data.setEntityTarget(asa.am.getThreatTable().getTopThreatHolder());
+        	} else if (asa.am.getEntity().getTarget()!=null) {
+        		data.setEntityTarget(asa.am.getEntity().getTarget());
+        	} else {
+        		data.setEntityTarget(asa.am.getEntity());
+        	}
+        }
+        Optional<Skill> maybeSkill = MythicMobs.inst().getSkillManager().getSkill(sname);
+        if (!maybeSkill.isPresent()) return;
+        Skill skill = maybeSkill.get();
+        if (skill.usable(data, SkillTrigger.API)) skill.execute(data);
+	}
+	
+	public static void doAI(ArmorStandAnimator asa) {
+    	ActiveMob aim = MythicMobs.inst().getMobManager().getMythicMobInstance(asa.aiMob.getEntity());
+    	ActiveMob aam = MythicMobs.inst().getMobManager().getMythicMobInstance(asa.am.getEntity());
+    	if (aam==null) {
+    		if (aim!=null) aim.getEntity().remove();
+    		asa.armorStand.remove();
+    		asa.remove();
+    		return;
+    	} else if (aim==null) {
+    		aam.setDead();
+    		asa.armorStand.remove();
+    		asa.remove();
+    		return;
+    	}
+    	if (aim.isDead() || aam.isDead()) {
+    		aim.setDead();
+    		asa.armorStand.remove();
+    		asa.remove();
+    	} else {
+			int check = ArmorStandAnimator.checkMovement(asa);
+			if (check==1) {
+				aam.signalMob(null, "MOVESTART");
+			} else if (check==2) {
+				aam.signalMob(null, "MOVESTOPP");
+			}
+			float y = aim.getEntity().getLocation().getYaw();
+			float p = aim.getEntity().getLocation().getPitch();
+			Location l=null;
+			if (asa.lastaction==2 && aim.hasTarget()) {
+				l = ArmorStandUtils.lookAt(asa.armorStand.getLocation(), aim.getEntity().getTarget().getBukkitEntity().getLocation());
+			} else {
+				Location ll = ArmorStandUtils.getTargetBlock(aim.getLivingEntity(), 10);
+				if (ll!=null) {
+					l = ArmorStandUtils.lookAt(asa.armorStand.getLocation(),ll);
+				}
+			}
+			if (l!=null) {
+				y = l.getYaw();
+				p = l.getPitch();
+			}
+			nmsutils.SetNMSLocation(asa.armorStand,
+					aim.getEntity().getLocation().getX(),
+					aim.getEntity().getLocation().getY(),
+					aim.getEntity().getLocation().getZ(),
+					y,
+					p);
+		}
+	}
+	
 	private ArmorStand armorStand;
 	private int length;
 	private Frame[] frames;
@@ -64,14 +167,18 @@ public class ArmorStandAnimator {
 	public String aiMobName;
 	private File aniFile;
 	public ActiveMob am,aiMob;
-	private BukkitTask task;
 	private double mcheck;
 	private int lastaction;
+	private boolean hasAI = true;
+	public int ClockTick;
+	public int currentTick;
 	
-	public ArmorStandAnimator(File aniFile, ArmorStand armorStand, Object oi, Object mobtype) {
+	public ArmorStandAnimator(File aniFile, ArmorStand armorStand, int animSpeed, Object oi, Object mobtype) {
 		this.aniFile = aniFile;
 		this.armorStand = armorStand;
         this.armorStand.setMetadata("asa", new FixedMetadataValue(main.inst(),true));
+        this.ClockTick = animSpeed;
+        this.currentTick = 0;
 		startLocation = armorStand.getLocation();
 		if (oi!=null) this.autoInit = (Boolean)oi;
 		this.am = MythicMobs.inst().getAPIHelper().getMythicMobInstance(armorStand);
@@ -81,24 +188,25 @@ public class ArmorStandAnimator {
 		}
 		this.loadFrames();
 		animators.add(this);
-		this.checkMovement();
+		anims.put(this.armorStand.getUniqueId(), this);
+		ArmorStandAnimator.checkMovement(this);
 	}
 	
-	public int checkMovement() {
+	public static int checkMovement(ArmorStandAnimator asa) {
 		int action = 0;
-		double chk=this.armorStand.getLocation().getX()
-				+this.armorStand.getLocation().getY()
-				+this.armorStand.getLocation().getZ();
-		if (chk!=this.mcheck) {
-			if (lastaction!=1) {
+		double chk=asa.armorStand.getLocation().getX()
+				+asa.armorStand.getLocation().getY()
+				+asa.armorStand.getLocation().getZ();
+		if (chk!=asa.mcheck) {
+			if (asa.lastaction!=1) {
 				action = 1;
-				this.lastaction = 1;
+				asa.lastaction = 1;
 			}
-			this.mcheck=chk;
+			asa.mcheck=chk;
 		} else {
-			if (lastaction!=2) {
+			if (asa.lastaction!=2) {
 				action = 2;
-				this.lastaction=2;
+				asa.lastaction=2;
 			}
 		}
 		return action;
@@ -108,83 +216,35 @@ public class ArmorStandAnimator {
 		this.createAIMob();
 	}
 	
-	private void attachToAIMob() {
+	public void attachToAIMob() {
 		if (this.aiMob!=null && !this.aiMob.isDead()) return;
 		this.createAIMob();
-        ArmorStandAnimator asa = this;
-		task = Bukkit.getScheduler().runTaskTimer(main.inst(), new Runnable() {
-            @Override
-            public void run() {
-            	ActiveMob aim = MythicMobs.inst().getMobManager().getMythicMobInstance(aiMob.getEntity());
-            	ActiveMob aam = MythicMobs.inst().getMobManager().getMythicMobInstance(am.getEntity());
-            	if (aam==null) {
-            		if (aim!=null) aim.getEntity().remove();
-            		armorStand.remove();
-            		asa.remove();
-            		Bukkit.getScheduler().cancelTask(task.getTaskId());
-            		return;
-            	}
-            	if (aim==null) return;
-            	if (aim.isDead() || aam.isDead()) {
-            		asa.remove();
-            		aim.setDead();
-            		armorStand.remove();
-            		Bukkit.getScheduler().cancelTask(task.getTaskId());
-            	} else {
-					int check = checkMovement();
-					if (check==1) {
-						aam.signalMob(null, "MOVESTART");
-					} else if (check==2) {
-						aam.signalMob(null, "MOVESTOPP");
-					}
-					float y = aim.getEntity().getLocation().getYaw();
-					float p = aim.getEntity().getLocation().getPitch();
-					Location l=null;
-					if (lastaction==2 && aim.hasTarget()) {
-						l = ArmorStandUtils.lookAt(armorStand.getLocation(), aim.getEntity().getTarget().getBukkitEntity().getLocation());
-					} else {
-						Location ll = ArmorStandUtils.getTargetBlock(aim.getLivingEntity(), 10);
-						if (ll!=null) {
-							l = ArmorStandUtils.lookAt(armorStand.getLocation(),ll);
-						}
-					}
-					if (l!=null) {
-						y = l.getYaw();
-						p = l.getPitch();
-					}
-					nmsutils.SetNMSLocation(armorStand,
-							aim.getEntity().getLocation().getX(),
-							aim.getEntity().getLocation().getY(),
-							aim.getEntity().getLocation().getZ(),
-							y,
-							p);
-				}
-            }
-       }, 1, 1);
 	}
 	
 	private void createAIMob() {
 		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
 		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
-		String u1 = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
-		String u2 = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
-        aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),u1));
-        aiMob.getLivingEntity().setMetadata("aiMob1", new FixedMetadataValue(main.inst(),u2));
+		String ulow = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
+		String uhigh = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
+        aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),ulow));
+        aiMob.getLivingEntity().setMetadata("aiMob1", new FixedMetadataValue(main.inst(),uhigh));
 		Bukkit.getScheduler().runTaskLater(main.inst(), new Runnable() {
 			@Override
 			public void run() {
 				ActiveMob aim = MythicMobs.inst().getAPIHelper().getMythicMobInstance(aiMob.getLivingEntity());
 				if (aim!=null) {
-					aim.getLivingEntity().setNoDamageTicks(20);
 					aim.getLivingEntity().setCanPickupItems(false);
 				}
 			}
 		}, 15);
+		this.hasAI = true;
 	}
 
-	public void changeAnim(File aniFile) {
+	public void changeAnim(File aniFile, int animSpeed) {
 		this.stop();
 		this.aniFile = aniFile;
+		this.ClockTick = animSpeed;
+		this.currentTick = 0;
 		this.loadFrames();
 		this.play();
 	}
@@ -305,7 +365,12 @@ public class ArmorStandAnimator {
 		}
 	}
 	
+	public boolean hasAI() {
+		return this.hasAI;
+	}
+	
 	public void remove() {
+		anims.remove(this.armorStand.getUniqueId());
 		animators.remove(this);
 		if (this.aiMob!=null && !this.aiMob.isDead()) {
 			this.aiMob.getEntity().remove();
@@ -337,12 +402,12 @@ public class ArmorStandAnimator {
 			if (f != null) {
 				Entity e = armorStand;
 				if (e.getVehicle()==null) {
-					if (this.aiMob==null) {
+					if (!this.hasAI) {
 						Location newLoc = startLocation.clone().add(f.x, f.y, f.z);
 						newLoc.setYaw(f.r + newLoc.getYaw());
 						nmsutils.SetNMSLocation(e, newLoc.getX(), newLoc.getY(), newLoc.getZ(), newLoc.getYaw(), e.getLocation().getPitch());
 					}
-				} else {
+				} else if (!this.hasAI) {
 					double xx,yy,zz;
 					xx = e.getVehicle().getLocation().getX();
 					yy = e.getVehicle().getLocation().getY();
@@ -355,57 +420,10 @@ public class ArmorStandAnimator {
 				armorStand.setLeftArmPose(f.leftArm);
 				armorStand.setRightArmPose(f.rightArm);
 				armorStand.setHeadPose(f.head);
-				
-				if (f.doSkill!=null) executeMythicMobsSkill(f.doSkill);
+				if (f.doSkill!=null) ArmorStandAnimator.executeMythicMobsSkill(this, f.doSkill);
 			}
 			currentFrame++;
 		}
-	}
-
-	private void executeMythicMobsSkill(String skillName) {
-		if (this.am==null) return;
-	    Optional<SkillTargeter> maybeTargeter = Optional.empty();
-        SkillMetadata data = new SkillMetadata(SkillTrigger.API, this.am, this.am.getEntity(), this.am.getLocation(), null, null, 1.0f);
-	    String target = null;
-	    String sname = skillName.split(" ")[0];
-	    if (skillName.contains("@")) {
-	    	String[] split = skillName.split("@");
-	    	target = "@"+split[1].split(" ")[0];
-	    	maybeTargeter = Optional.of(AbstractSkill.parseSkillTargeter(target));
-	    }
-	    if (maybeTargeter.isPresent()) {
-            SkillTargeter targeter = maybeTargeter.get();
-            if (targeter instanceof IEntitySelector) {
-                data.setEntityTargets(((IEntitySelector)targeter).getEntities(data));
-                ((IEntitySelector)targeter).filter(data, false);
-            }
-            if (targeter instanceof ILocationSelector) {
-                data.setLocationTargets(((ILocationSelector)targeter).getLocations(data));
-                ((ILocationSelector)targeter).filter(data);
-            } else if (targeter instanceof MTOrigin) {
-                data.setLocationTargets(((MTOrigin)targeter).getLocation(data.getOrigin()));
-            } else if (targeter instanceof MTTriggerLocation) {
-                HashSet<AbstractLocation> lTargets = new HashSet<AbstractLocation>();
-                lTargets.add(data.getTrigger().getLocation());
-                data.setLocationTargets(lTargets);
-            }
-            if (targeter instanceof ConsoleTargeter) {
-                data.setEntityTargets(null);
-                data.setLocationTargets(null);
-            }
-        } else {
-        	if (am.hasThreatTable()) {
-        		data.setEntityTarget(am.getThreatTable().getTopThreatHolder());
-        	} else if (am.getEntity().getTarget()!=null) {
-        		data.setEntityTarget(am.getEntity().getTarget());
-        	} else {
-        		data.setEntityTarget(am.getEntity());
-        	}
-        }
-        Optional<Skill> maybeSkill = MythicMobs.inst().getSkillManager().getSkill(sname);
-        if (!maybeSkill.isPresent()) return;
-        Skill skill = maybeSkill.get();
-        if (skill.usable(data, SkillTrigger.API)) skill.execute(data);
 	}
 
 	public int getCurrentFrame() {

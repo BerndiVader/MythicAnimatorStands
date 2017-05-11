@@ -14,6 +14,7 @@ public class mmArmorStandInitMechanic extends SkillMechanic implements INoTarget
 	private String animFile;
 	private boolean base;
 	private Object oi, mobtype;
+	private int animSpeed;
 	
 	public mmArmorStandInitMechanic(String skill, MythicLineConfig mlc) {
 		super(skill, mlc);
@@ -22,13 +23,14 @@ public class mmArmorStandInitMechanic extends SkillMechanic implements INoTarget
 		this.base = mlc.getBoolean(new String[]{"base","plate"},false);
 		this.oi = mlc.getBoolean(new String[]{"autoinit","ai"},false);
 		this.mobtype = mlc.getString(new String[]{"mobtype"});
+		this.animSpeed = mlc.getInteger(new String[]{"speed","animspeed","s"},0);
 	}
 
 	@Override
 	public boolean castAtEntity(SkillMetadata data, AbstractEntity target) {
-		if (!MythicMobs.inst().getMobManager().isActiveMob(target)) return false;
+		if (!MythicMobs.inst().getMobManager().isActiveMob(target) || this.mobtype==null) return false;
 		ActiveMob am = MythicMobs.inst().getMobManager().getMythicMobInstance(target);
-		return ArmorStandUtils.initArmorStandAnim(am, this.animFile, this.base, this.oi, this.mobtype);
+		return ArmorStandUtils.initArmorStandAnim(am, this.animFile, this.base, this.animSpeed, this.oi, this.mobtype);
 	}
 
 	@Override

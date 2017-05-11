@@ -33,10 +33,11 @@ public class mmMythicMobsEvents implements Listener {
 	
 	@EventHandler
 	public void mmMythicMobsMechanicsLoad(MythicMechanicLoadEvent e) {
-		if (e.getMechanicName().toUpperCase().equals("ASANIMATE")) {
-			SkillMechanic skill = new mmArmorStandAnimateMechanic(e.getContainer().getConfigLine(),e.getConfig());
-			e.register(skill);
-		} else if (e.getMechanicName().toUpperCase().equals("ASINIT")) {
+//		if (e.getMechanicName().toUpperCase().equals("ASANIMATE")) {
+//			SkillMechanic skill = new mmArmorStandAnimateMechanic(e.getContainer().getConfigLine(),e.getConfig());
+//			e.register(skill);
+//		} else 
+		if (e.getMechanicName().toUpperCase().equals("ASINIT")) {
 			SkillMechanic skill = new mmArmorStandInitMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
 		} else if (e.getMechanicName().toUpperCase().equals("ASUNLOAD")) {
@@ -73,9 +74,10 @@ public class mmMythicMobsEvents implements Listener {
 		if (!e.getEntity().hasMetadata("aiMob")) return;
 		UUID u = this.getUUIDbyMeta(e.getEntity());
         ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(u).get();
-        ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(am.getEntity());
-        asa.stop();
-        asa.remove();
+        am.setDead();
+//        ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(am.getEntity());
+//        asa.stop();
+//        asa.remove();
         am.signalMob(BukkitAdapter.adapt(e.getKiller()), "DEATH");
 	}
 	
@@ -115,15 +117,19 @@ public class mmMythicMobsEvents implements Listener {
 		}
 	}
 	
-	@EventHandler
-	public void AnimatorStandHandleDamage(EntityDamageByEntityEvent e) {
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void AnimatorStandHandleDamage(EntityDamageEvent e) {
 		if (e.getEntity().getType().equals(EntityType.ARMOR_STAND) && e.getEntity().hasMetadata("asa")) {
 			e.setCancelled(true);
 			ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(BukkitAdapter.adapt(e.getEntity()));
 			if (asa!=null) {
 				LivingEntity le = MythicMobs.inst().getMobManager().getMythicMobInstance(asa.aiMob.getEntity()).getLivingEntity();
 				if (le!=null) {
-					le.damage(e.getDamage()/2, e.getDamager());
+					if (e instanceof EntityDamageByEntityEvent) {
+						le.damage(e.getDamage()/2, ((EntityDamageByEntityEvent) e).getDamager());
+					} else {
+						le.damage(e.getDamage()/2);
+					}
 					le.setLastDamageCause(e);
 				}
 			}
@@ -140,6 +146,7 @@ public class mmMythicMobsEvents implements Listener {
 	    			if (entity.isDead()) {
 	    				ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(BukkitAdapter.adapt(entity));
 	    				if (asa!=null) {
+	    					Bukkit.getLogger().info("event destroy!!");
 	   						asa.stop();
 	   						asa.remove();
 	    				}

@@ -9,11 +9,14 @@ import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
 
 public class mmArmorStandChangeAnimMechanic extends SkillMechanic implements ITargetedEntitySkill, INoTargetSkill {
 	private String animFile;
+	private int animSpeed;
 
 	public mmArmorStandChangeAnimMechanic(String skill, MythicLineConfig mlc) {
 		super(skill, mlc);
 		this.ASYNC_SAFE=false;
 		this.animFile = mlc.getString(new String[]{"animation","anim","a"},"");
+		this.animSpeed = mlc.getInteger(new String[]{"animspeed","speed","s"},0);
+		
 	}
 
 	@Override
@@ -23,7 +26,7 @@ public class mmArmorStandChangeAnimMechanic extends SkillMechanic implements ITa
 
 	@Override
 	public boolean castAtEntity(SkillMetadata data, AbstractEntity target) {
-		return ArmorStandUtils.changeAnimation(target, this.animFile);
+		return ArmorStandUtils.changeAnimation(target, this.animFile, this.animSpeed);
 	}
 
 }
