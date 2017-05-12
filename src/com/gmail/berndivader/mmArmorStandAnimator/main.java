@@ -1,13 +1,8 @@
 package com.gmail.berndivader.mmArmorStandAnimator;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.gmail.berndivader.mmArmorStandAnimator.NMS.*;
 
@@ -43,26 +38,6 @@ public class main extends JavaPlugin {
 		new mmMythicMobsEvents();
 		entityhider = new EntityHider(this);
 		clock = new AnimatorClock();
-		
-		new BukkitRunnable() {
-    		public void run() {
-    			Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator();
-    			while (it.hasNext()) {
-    				ArmorStandAnimator asa = it.next();
-    				if (asa!=null) {
-    					if (asa.getArmorStand()==null || asa.getArmorStand().isDead()) it.remove();
-    				} else {
-    					it.remove();
-    				}
-    			}
-    			Iterator<Entry<Integer,UUID>> it1 = entityhider.EntityMap.entrySet().iterator();
-    			while (it1.hasNext()) {
-    				Entry<Integer, UUID> u = it1.next();
-    				if (Bukkit.getEntity(u.getValue())==null) it1.remove();
-    			}
-            }
-        }.runTaskTimerAsynchronously(this, 1200L, 1200L);
-        
 	}
 
 	@Override

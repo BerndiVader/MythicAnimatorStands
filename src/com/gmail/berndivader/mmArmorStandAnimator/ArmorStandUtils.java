@@ -27,13 +27,11 @@ public class ArmorStandUtils {
 					asa.reAttachAIMob();
 				}
 			}
-			ArmorStand as = asa.getArmorStand();
 			final ArmorStandAnimator aa = asa;
 			new BukkitRunnable() {
         		int r = repeat;
         		public void run() {
         			if (r!=-1) {
-       					aa.setStartLocation(as.getLocation());
         				aa.update();
         				r--;
         			} else {
@@ -136,7 +134,7 @@ public class ArmorStandUtils {
 		while(bit.hasNext()) {
 			Block next = bit.next();
 			if(next != null && next.getType() != Material.AIR) {
-				return next.getLocation();
+				return next.getLocation().clone();
 			}
 		}
 		return null;
@@ -144,6 +142,7 @@ public class ArmorStandUtils {
 	
 	public static Location lookAt(Location loc, Location lookat) {
         loc = loc.clone();
+        lookat = lookat.clone();
         double dx = lookat.getX() - loc.getX();
         double dy = lookat.getY() - loc.getY();
         double dz = lookat.getZ() - loc.getZ();

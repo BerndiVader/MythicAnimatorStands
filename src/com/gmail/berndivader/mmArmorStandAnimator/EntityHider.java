@@ -3,8 +3,8 @@ package com.gmail.berndivader.mmArmorStandAnimator;
 import static com.comphenix.protocol.PacketType.Play.Server.*;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.event.HandlerList;
@@ -23,7 +23,7 @@ import io.lumine.xikage.mythicmobs.adapters.AbstractPlayer;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 
 public class EntityHider implements Listener {
-    protected HashMap<Integer,UUID> EntityMap = new HashMap<>();
+    protected ConcurrentHashMap<Integer,UUID> EntityMap = new ConcurrentHashMap<>();
     
     @SuppressWarnings("deprecation")
 	private static final PacketType[] ENTITY_PACKETS = {
@@ -44,7 +44,7 @@ public class EntityHider implements Listener {
     }
     
     public void hideEntity(Entity entity) {
-    	EntityMap.put(entity.getEntityId(),entity.getUniqueId());
+ 	EntityMap.put(entity.getEntityId(),entity.getUniqueId());
         PacketContainer e1 = new PacketContainer(ENTITY_DESTROY);
         e1.getIntegerArrays().write(0, new int[] { entity.getEntityId() });
     	for (AbstractPlayer p : MythicMobs.inst().getEntityManager().getPlayersInRangeSq(BukkitAdapter.adapt(entity.getLocation()), 16000)) {

@@ -3,12 +3,13 @@ package com.gmail.berndivader.mmArmorStandAnimator;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -36,22 +37,21 @@ import io.lumine.xikage.mythicmobs.skills.targeters.MTTriggerLocation;
 public class ArmorStandAnimator {
 	private static NMSUtils nmsutils = main.NMSUtils();
 	private static Map<String, Frame[]> animCache = new HashMap<String, Frame[]>();
-	public static HashSet<ArmorStandAnimator> animators = new HashSet<ArmorStandAnimator>();
-	public static HashMap<UUID,ArmorStandAnimator> anims = new HashMap<UUID,ArmorStandAnimator>();
+	public static ConcurrentHashMap<UUID, ArmorStandAnimator> animators = new ConcurrentHashMap<UUID,ArmorStandAnimator>();
 
 	public static void updateAll() {
-		for (ArmorStandAnimator ani : animators) {
+		for (ArmorStandAnimator ani : animators.values()) {
 			ani.update();
 		}
 	}
 
-	public static Set<ArmorStandAnimator> getAnimators() {
-		return animators;
+	public static Collection<ArmorStandAnimator> getAnimators() {
+		return animators.values();
 	}
 	
 	public static ArmorStandAnimator getAnimatorByUUID(UUID uuid) {
-		if (anims.containsKey(uuid)) {
-			return anims.get(uuid);
+		if (animators.containsKey(uuid)) {
+			return animators.get(uuid);
 		}
 		return null;
 	}
@@ -169,16 +169,16 @@ public class ArmorStandAnimator {
 	public ActiveMob am,aiMob;
 	private double mcheck;
 	private int lastaction;
-	private boolean hasAI = true;
-	public int ClockTick;
-	public int currentTick;
+	private boolean hasAI = false;
+	public int AnimClock;
+	public int currentAnimTick;
 	
 	public ArmorStandAnimator(File aniFile, ArmorStand armorStand, int animSpeed, Object oi, Object mobtype) {
 		this.aniFile = aniFile;
 		this.armorStand = armorStand;
         this.armorStand.setMetadata("asa", new FixedMetadataValue(main.inst(),true));
-        this.ClockTick = animSpeed;
-        this.currentTick = 0;
+        this.AnimClock = animSpeed;
+        this.currentAnimTick = 0;
 		startLocation = armorStand.getLocation();
 		if (oi!=null) this.autoInit = (Boolean)oi;
 		this.am = MythicMobs.inst().getAPIHelper().getMythicMobInstance(armorStand);
@@ -187,8 +187,7 @@ public class ArmorStandAnimator {
 			this.attachToAIMob();
 		}
 		this.loadFrames();
-		animators.add(this);
-		anims.put(this.armorStand.getUniqueId(), this);
+		animators.put(this.armorStand.getUniqueId(), this);
 		ArmorStandAnimator.checkMovement(this);
 	}
 	
@@ -243,8 +242,8 @@ public class ArmorStandAnimator {
 	public void changeAnim(File aniFile, int animSpeed) {
 		this.stop();
 		this.aniFile = aniFile;
-		this.ClockTick = animSpeed;
-		this.currentTick = 0;
+		this.AnimClock = animSpeed;
+		this.currentAnimTick = 0;
 		this.loadFrames();
 		this.play();
 	}
@@ -370,8 +369,7 @@ public class ArmorStandAnimator {
 	}
 	
 	public void remove() {
-		anims.remove(this.armorStand.getUniqueId());
-		animators.remove(this);
+		animators.remove(this.armorStand.getUniqueId());
 		if (this.aiMob!=null && !this.aiMob.isDead()) {
 			this.aiMob.getEntity().remove();
 		}
@@ -421,6 +419,7 @@ public class ArmorStandAnimator {
 				armorStand.setRightArmPose(f.rightArm);
 				armorStand.setHeadPose(f.head);
 				if (f.doSkill!=null) ArmorStandAnimator.executeMythicMobsSkill(this, f.doSkill);
+				setStartLocation(e.getLocation());
 			}
 			currentFrame++;
 		}

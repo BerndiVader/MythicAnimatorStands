@@ -28,7 +28,7 @@ public class mmArmorStandInitMechanic extends SkillMechanic implements INoTarget
 
 	@Override
 	public boolean castAtEntity(SkillMetadata data, AbstractEntity target) {
-		if (!MythicMobs.inst().getMobManager().isActiveMob(target) || this.mobtype==null) return false;
+		if (!MythicMobs.inst().getMobManager().isActiveMob(target)) return false;
 		ActiveMob am = MythicMobs.inst().getMobManager().getMythicMobInstance(target);
 		return ArmorStandUtils.initArmorStandAnim(am, this.animFile, this.base, this.animSpeed, this.oi, this.mobtype);
 	}
