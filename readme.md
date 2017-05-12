@@ -2,6 +2,8 @@
 #####build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires ProtocolLib & MythicMobs 4.0.0 or higher
 
 
+** 12.5.2017 update 0.44a: some more improvements. added noai animatorstands again.
+#####
 ** 11.5.2017 update 0.42a: matured the code. dropped asanim and none aiMob. added animspeed to asinit mechanic. 
 #####
 *** 8.5.2017 update 0.41a: now using ProtocolLib. 
