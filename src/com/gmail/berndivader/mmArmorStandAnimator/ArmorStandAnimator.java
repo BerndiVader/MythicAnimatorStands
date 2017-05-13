@@ -110,19 +110,19 @@ public class ArmorStandAnimator {
     	ActiveMob aim = MythicMobs.inst().getMobManager().getMythicMobInstance(asa.aiMob.getEntity());
     	ActiveMob aam = MythicMobs.inst().getMobManager().getMythicMobInstance(asa.am.getEntity());
     	if (aam==null) {
-    		if (aim!=null) aim.getEntity().remove();
-    		asa.armorStand.remove();
+    		if (aim!=null) ArmorStandUtils.removeEntitySync(aim.getEntity().getBukkitEntity());
+    		ArmorStandUtils.removeEntitySync(asa.getArmorStand());
     		asa.remove();
     		return;
     	} else if (aim==null) {
     		aam.setDead();
-    		asa.armorStand.remove();
+    		ArmorStandUtils.removeEntitySync(asa.getArmorStand());
     		asa.remove();
     		return;
     	}
     	if (aim.isDead() || aam.isDead()) {
     		aim.setDead();
-    		asa.armorStand.remove();
+    		ArmorStandUtils.removeEntitySync(asa.getArmorStand());
     		asa.remove();
     	} else {
 			int check = ArmorStandAnimator.checkMovement(asa);
@@ -371,7 +371,7 @@ public class ArmorStandAnimator {
 	public void remove() {
 		animators.remove(this.armorStand.getUniqueId());
 		if (this.aiMob!=null && !this.aiMob.isDead()) {
-			this.aiMob.getEntity().remove();
+    		ArmorStandUtils.removeEntitySync(this.aiMob.getEntity().getBukkitEntity());
 		}
 	}
 

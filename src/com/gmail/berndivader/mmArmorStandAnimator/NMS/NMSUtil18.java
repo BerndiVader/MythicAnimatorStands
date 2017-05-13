@@ -151,6 +151,7 @@ public class NMSUtil18 implements NMSUtils {
     protected static Method class_NBTTagCompound_hasKeyMethod;
     protected static Method class_CraftWorld_getTileEntityAtMethod;
     protected static Method class_CraftWorld_spawnMethod;
+    protected static Method class_Entity_setInvisibleMethod;
     protected static Method class_Entity_setLocationMethod;
     protected static Method class_Entity_getIdMethod;
     protected static Method class_Entity_getDataWatcherMethod;
@@ -303,6 +304,8 @@ public class NMSUtil18 implements NMSUtils {
             class_Entity_getBukkitEntityMethod = class_Entity.getMethod("getBukkitEntity");
             class_Entity_setYawPitchMethod = class_Entity.getDeclaredMethod("setYawPitch", Float.TYPE, Float.TYPE);
             class_Entity_setYawPitchMethod.setAccessible(true);
+            class_Entity_setInvisibleMethod = class_Entity.getDeclaredMethod("setInvisible", Boolean.TYPE);
+            class_Entity_setInvisibleMethod.setAccessible(true);
             class_Entity_setSilentMethod = class_Entity.getDeclaredMethod("b", Boolean.TYPE);
             class_AxisAlignedBB_createBBMethod = class_AxisAlignedBB.getMethod("a", Double.TYPE, Double.TYPE, Double.TYPE, Double.TYPE, Double.TYPE, Double.TYPE);
             class_World_explodeMethod = class_World.getMethod("createExplosion", class_Entity, Double.TYPE, Double.TYPE, Double.TYPE, Float.TYPE, Boolean.TYPE, Boolean.TYPE);
@@ -1214,7 +1217,17 @@ public class NMSUtil18 implements NMSUtils {
         }
         return null;
     }
-
+    
+    @Override
+    public void setInvisible(Entity e, boolean bool) {
+    	try {
+        	Object nmsEntity = getHandle(e);
+        	class_Entity_setInvisibleMethod.invoke(nmsEntity, bool);
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+    }
+    
     @Override
     public void setRotation(Entity e, float y, float p) {
     	try {
@@ -1243,4 +1256,5 @@ public class NMSUtil18 implements NMSUtils {
             ex.printStackTrace();
         }
     }
+
 }

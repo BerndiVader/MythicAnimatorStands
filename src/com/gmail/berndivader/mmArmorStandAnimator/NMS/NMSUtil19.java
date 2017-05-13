@@ -130,6 +130,7 @@ public class NMSUtil19 implements NMSUtils {
     protected static Method class_World_getEntitiesMethod;
     protected static Method class_Entity_setSilentMethod;
     protected static Method class_Entity_setYawPitchMethod;
+    protected static Method class_Entity_setInvisibleMethod;
     protected static Method class_Entity_getBukkitEntityMethod;
     protected static Method class_EntityLiving_damageEntityMethod;
     protected static Method class_DamageSource_getMagicSourceMethod;
@@ -342,6 +343,8 @@ public class NMSUtil19 implements NMSUtils {
             class_Entity_getBukkitEntityMethod = class_Entity.getMethod("getBukkitEntity");
             class_Entity_setYawPitchMethod = class_Entity.getDeclaredMethod("setYawPitch", Float.TYPE, Float.TYPE);
             class_Entity_setYawPitchMethod.setAccessible(true);
+            class_Entity_setInvisibleMethod = class_Entity.getDeclaredMethod("setInvisible", Boolean.TYPE);
+            class_Entity_setInvisibleMethod.setAccessible(true);
             class_AxisAlignedBB_Constructor = class_AxisAlignedBB.getConstructor(Double.TYPE, Double.TYPE, Double.TYPE, Double.TYPE, Double.TYPE, Double.TYPE);
             class_World_explodeMethod = class_World.getMethod("createExplosion", class_Entity, Double.TYPE, Double.TYPE, Double.TYPE, Float.TYPE, Boolean.TYPE, Boolean.TYPE);
             class_NBTTagCompound_setBooleanMethod = class_NBTTagCompound.getMethod("setBoolean", String.class, Boolean.TYPE);
@@ -1444,6 +1447,16 @@ public class NMSUtil19 implements NMSUtils {
     	try {
         	Object entityHandle = getHandle(e);
         	class_Entity_setLocationMethod.invoke(entityHandle, x, y, z, r, p);
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+    }
+
+    @Override
+    public void setInvisible(Entity e, boolean bool) {
+    	try {
+        	Object nmsEntity = getHandle(e);
+        	class_Entity_setInvisibleMethod.invoke(nmsEntity, bool);
     	} catch (Exception ex) {
     		ex.printStackTrace();
     	}

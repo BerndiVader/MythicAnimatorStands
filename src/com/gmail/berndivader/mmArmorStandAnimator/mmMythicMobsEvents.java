@@ -122,8 +122,12 @@ public class mmMythicMobsEvents implements Listener {
 		if (e.getEntity().getType().equals(EntityType.ARMOR_STAND) && e.getEntity().hasMetadata("asa")) {
 			e.setCancelled(true);
 			ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(BukkitAdapter.adapt(e.getEntity()));
-			if (asa!=null) {
-				LivingEntity le = MythicMobs.inst().getMobManager().getMythicMobInstance(asa.aiMob.getEntity()).getLivingEntity();
+			ActiveMob aim = MythicMobs.inst().getMobManager().getMythicMobInstance(asa.aiMob.getEntity());
+			if (asa!=null && aim!=null) {
+				LivingEntity le = null;
+				if (aim.getEntity().getBukkitEntity() instanceof LivingEntity) {
+					le = aim.getLivingEntity();
+				}
 				if (le!=null) {
 					if (e instanceof EntityDamageByEntityEvent) {
 						le.damage(e.getDamage()/2, ((EntityDamageByEntityEvent) e).getDamager());
@@ -131,6 +135,8 @@ public class mmMythicMobsEvents implements Listener {
 						le.damage(e.getDamage()/2);
 					}
 					le.setLastDamageCause(e);
+				} else {
+					aim.getEntity().damage((float)e.getDamage()/2);
 				}
 			}
 		}

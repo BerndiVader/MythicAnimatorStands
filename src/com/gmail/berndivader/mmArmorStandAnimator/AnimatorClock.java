@@ -21,14 +21,13 @@ public class AnimatorClock {
 				for (Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator(); it.hasNext(); ) {
 					ArmorStandAnimator asa = it.next();
 					asa.currentAnimTick++;
+					if (AnimatorClock.currentAiTick>=AnimatorClock.AiClock) this.aiClock(asa);
 					if (asa.currentAnimTick>=asa.AnimClock) {
 						this.animClock(asa);
 						asa.currentAnimTick = 0;
 					}
-					if (AnimatorClock.currentAiTick>=AnimatorClock.AiClock) this.aiClock(asa);
 				}
 				if (AnimatorClock.currentCleanUpTick>=AnimatorClock.CleanUpTick) cleanUpClock();
-				if (AnimatorClock.currentAiTick>=AnimatorClock.AiClock) AnimatorClock.currentAiTick=0;
 			}
 			
 			private void cleanUpClock() {
@@ -44,12 +43,13 @@ public class AnimatorClock {
 		    					it.remove();
 		    				}
 		    			}
-		    			for (Iterator<Entry<Integer,UUID>> it = main.getEntityHider().EntityMap.entrySet().iterator(); it.hasNext();) {
+  		    			for (Iterator<Entry<Integer,UUID>> it = main.getEntityHider().EntityMap.entrySet().iterator(); it.hasNext();) {
 		    				Entry<Integer, UUID> u = it.next();
 		    				if (Bukkit.getEntity(u.getValue())==null) it.remove();
 		    			}
 					}
 				}.runTaskAsynchronously(main.inst());
+				AnimatorClock.currentCleanUpTick=0;
 			}
 
 			private void aiClock(ArmorStandAnimator asa) {
@@ -61,7 +61,7 @@ public class AnimatorClock {
 				asa.update();
 			}
 
-		}.runTaskTimerAsynchronously(main.inst(), 1, 1);
+		}.runTaskTimer(main.inst(), 1, 1);
 		
 	}
 }

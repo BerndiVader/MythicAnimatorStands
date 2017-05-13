@@ -51,7 +51,7 @@ public class ArmorStandUtils {
         }
 		return false;
 	}
-
+	
 	public static boolean changeAnimation(AbstractEntity entity, String animFile, int animSpeed) {
 		ArmorStandAnimator asa  = getAnimatorInstance(entity);
 		if (asa!=null) {
@@ -166,6 +166,15 @@ public class ArmorStandUtils {
 	
 	public static ArmorStandAnimator getAnimatorInstance(AbstractEntity entity) {
 		return ArmorStandAnimator.getAnimatorByUUID(entity.getUniqueId());
+	}
+	
+	public static void removeEntitySync(Entity entity) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				entity.remove();
+			}
+		}.runTask(main.inst());
 	}
 	
 }
