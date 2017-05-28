@@ -77,7 +77,7 @@ public class ArmorStandUtils {
 			asa.remove();
 		};
 		try {
-			File f = new File(MythicMobs.inst().getDataFolder()+"\\Anims", file);
+			File f = new File(MythicMobs.inst().getDataFolder()+"/Anims", file);
 			asa = new ArmorStandAnimator(f, as, animSpeed, oi, mobtype);
 			asa.setStartLocation(as.getLocation());
 			as.setBasePlate(base);
