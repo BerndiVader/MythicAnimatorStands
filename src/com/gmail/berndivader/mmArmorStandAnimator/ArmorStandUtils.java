@@ -27,18 +27,6 @@ public class ArmorStandUtils {
 					asa.reAttachAIMob();
 				}
 			}
-			final ArmorStandAnimator aa = asa;
-			new BukkitRunnable() {
-        		int r = repeat;
-        		public void run() {
-        			if (r!=-1) {
-        				aa.update();
-        				r--;
-        			} else {
-        				this.cancel();
-        			}
-                }
-            }.runTaskTimer(main.inst(), 0, delay);
 			return true;
 		}
 		return false;

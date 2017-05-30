@@ -261,10 +261,8 @@ public class ArmorStandAnimator {
 			try {
 				br = new BufferedReader(new FileReader(aniFile));
 				String line = "";
-				// create the current frame variable
 				Frame currentFrame = null;
 				while ((line = br.readLine()) != null) {
-					// set the length
 					if (line.startsWith("length")) {
 						length = (int) Float.parseFloat(line.split(" ")[1]);
 						frames = new Frame[length];

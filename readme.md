@@ -1,7 +1,8 @@
 # AnimateStands 4 MythicMobs
 #####build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires ProtocolLib & MythicMobs 4.0.0 or higher
 
-
+** 29.5.2017 update 0.46a: some more internal improvements. fixed a DamageEntityEvent NPE if there is no ai for the animatorstand.
+#####
 ** 28.5.2017 update 0.451a: fixed bug in loading animation.
 #####
 ** 12.5.2017 update 0.44a: some more improvements. added noai animatorstands again.
