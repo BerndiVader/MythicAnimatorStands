@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
@@ -117,43 +118,38 @@ public class mmMythicMobsEvents implements Listener {
 			ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(BukkitAdapter.adapt(e.getEntity()));
 			if (!asa.hasAI()) return;
 			e.setCancelled(true);
-			ActiveMob aim = MythicMobs.inst().getMobManager().getMythicMobInstance(asa.aiMob.getEntity());
-			if (asa!=null && aim!=null) {
-				LivingEntity le = null;
-				if (aim.getEntity().getBukkitEntity() instanceof LivingEntity) {
-					le = aim.getLivingEntity();
-				}
-				if (le!=null) {
-					if (e instanceof EntityDamageByEntityEvent) {
-						le.damage(e.getDamage()/2, ((EntityDamageByEntityEvent) e).getDamager());
-					} else {
-						le.damage(e.getDamage()/2);
-					}
-					le.setLastDamageCause(e);
-				} else {
-					aim.getEntity().damage((float)e.getDamage()/2);
+			if (e instanceof EntityDamageByEntityEvent && !asa.isDying) {
+				EntityDamageByEntityEvent ee = (EntityDamageByEntityEvent) e;
+				AbstractEntity attacker = this.getAttacker(ee.getDamager());
+				if (!attacker.isPlayer()) {
+					asa.aiMob.getLivingEntity().damage(e.getDamage(), ee.getDamager());
 				}
 			}
 		}
 	}
 	
 	@EventHandler
-	public void mmArmorStandAnimatorDestroy(EntityDamageEvent e) {
-		if (e.isCancelled()) return;
-		if (e.getEntity().getType().equals(EntityType.ARMOR_STAND)) {
-			Entity entity = e.getEntity();
-			Bukkit.getScheduler().scheduleSyncDelayedTask(main.inst(), new Runnable() {
-	            @Override
-	            public void run() {
-	    			if (entity.isDead()) {
-	    				ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(BukkitAdapter.adapt(entity));
+	public void mmaiMobDeathEvent(MythicMobDeathEvent e) {
+		if (e.getEntity().hasMetadata("aiMob")) {
+			UUID u = this.getUUIDbyMeta(e.getEntity());
+			if (MythicMobs.inst().getMobManager().isActiveMob(u)) {
+				ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(u).get();
+				AbstractEntity killer = BukkitAdapter.adapt(e.getKiller());
+				am.setLastAggroCause(killer);
+				new TriggeredSkill(SkillTrigger.DEATH, am, killer);
+				final ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(am.getEntity());
+				asa.isDying = true;
+				new BukkitRunnable() {
+					@Override
+					public void run() {
 	    				if (asa!=null) {
-	   						asa.stop();
-	   						asa.remove();
+	    					asa.getArmorStand().remove();
+	    					asa.stop();
+	    					asa.remove();
 	    				}
-	    			}
-	            }
-	        });			
+					}
+				}.runTaskLater(main.inst(), 20L);
+			}
 		}
 	}
 	

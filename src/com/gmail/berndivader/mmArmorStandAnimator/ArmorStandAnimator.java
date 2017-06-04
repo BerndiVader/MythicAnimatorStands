@@ -16,6 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.EulerAngle;
 
 import com.gmail.berndivader.mmArmorStandAnimator.NMS.NMSUtils;
@@ -120,11 +121,12 @@ public class ArmorStandAnimator {
     		asa.remove();
     		return;
     	}
-    	if (aim.isDead() || aam.isDead()) {
+    	if ((aim.isDead() || aam.isDead()) && !asa.isDying) {
     		aim.setDead();
     		ArmorStandUtils.removeEntitySync(asa.getArmorStand());
     		asa.remove();
     	} else {
+    		if (!aim.getLivingEntity().hasPotionEffect(PotionEffectType.INVISIBILITY)) ArmorStandUtils.applyInvisible(aim, 0L);
 			int check = ArmorStandAnimator.checkMovement(asa);
 			if (check==1) {
 				aam.signalMob(null, "MOVESTART");
@@ -146,6 +148,7 @@ public class ArmorStandAnimator {
 				y = l.getYaw();
 				p = l.getPitch();
 			}
+			Bukkit.getLogger().info("still updating!");
 			nmsutils.SetNMSLocation(asa.armorStand,
 					aim.getEntity().getLocation().getX(),
 					aim.getEntity().getLocation().getY(),
@@ -172,6 +175,8 @@ public class ArmorStandAnimator {
 	private boolean hasAI = false;
 	public int AnimClock;
 	public int currentAnimTick;
+	public boolean isDying = false;
+	public boolean usePL;
 	
 	public ArmorStandAnimator(File aniFile, ArmorStand armorStand, int animSpeed, Object oi, Object mobtype) {
 		this.aniFile = aniFile;
@@ -222,7 +227,7 @@ public class ArmorStandAnimator {
 	
 	private void createAIMob() {
 		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
-		main.getEntityHider().hideEntity(this.aiMob.getEntity().getBukkitEntity());
+		ArmorStandUtils.applyInvisible(this.aiMob, 5L);
 		String ulow = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
 		String uhigh = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
         aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(main.inst(),ulow));

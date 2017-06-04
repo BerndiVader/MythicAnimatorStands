@@ -10,6 +10,8 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
@@ -163,6 +165,18 @@ public class ArmorStandUtils {
 				entity.remove();
 			}
 		}.runTask(main.inst());
+	}
+
+	public static void applyInvisible(ActiveMob am, long runlater) {
+		PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 2073600, 4, false, false);
+		LivingEntity le = am.getLivingEntity();
+		pe.apply(le);
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				le.getEquipment().clear();
+			}
+		}.runTaskLater(main.inst(), runlater);
 	}
 	
 }

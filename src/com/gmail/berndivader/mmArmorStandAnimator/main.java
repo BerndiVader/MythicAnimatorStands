@@ -12,9 +12,7 @@ public class main extends JavaPlugin {
 	private static int mmVer;
 	private static String strMMVer;
 	private static NMSUtils nmsutils;
-	private static EntityHider entityhider;
 	private static AnimatorClock clock;
-	public static EntityHider getEntityHider() {return entityhider;}
 	public static NMSUtils NMSUtils() {return nmsutils;}
 	public static AnimatorClock getClock() {return clock;}
 	
@@ -36,7 +34,6 @@ public class main extends JavaPlugin {
 		}
 		getNMSUtil();
 		new mmMythicMobsEvents();
-		entityhider = new EntityHider(this);
 		clock = new AnimatorClock();
 	}
 

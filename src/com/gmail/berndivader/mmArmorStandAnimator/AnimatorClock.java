@@ -1,37 +1,35 @@
 package com.gmail.berndivader.mmArmorStandAnimator;
 
 import java.util.Iterator;
-import java.util.UUID;
-import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class AnimatorClock {
-	private static long CleanUpTick=600, currentCleanUpTick=0;
-	private static long currentAiTick=0, AiClock=1;
 	
 	public AnimatorClock() {
 		
 		new BukkitRunnable() {
+			private long CleanUpTick=600, currentCleanUpTick=0;
+			private long currentAiTick=0, AiClock=0;
 			@Override
 			public void run() {
-				AnimatorClock.currentCleanUpTick++;
-				AnimatorClock.currentAiTick++;
+				this.currentCleanUpTick++;
+				this.currentAiTick++;
 				for (Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator(); it.hasNext(); ) {
 					ArmorStandAnimator asa = it.next();
 					asa.currentAnimTick++;
-					if (AnimatorClock.currentAiTick>=AnimatorClock.AiClock) this.aiClock(asa);
 					if (asa.currentAnimTick>=asa.AnimClock) {
 						this.animClock(asa);
 						asa.currentAnimTick = 0;
 					}
+					if (this.currentAiTick>=this.AiClock) this.aiClock(asa);
 				}
-				if (AnimatorClock.currentCleanUpTick>=AnimatorClock.CleanUpTick) cleanUpClock();
+				if (this.currentCleanUpTick>=this.CleanUpTick) cleanUpClock();
+				if (this.currentAiTick>=this.AiClock) this.currentAiTick = 0;
 			}
 			
 			private void cleanUpClock() {
-				AnimatorClock.currentCleanUpTick=0;
+				this.currentCleanUpTick=0;
 				new BukkitRunnable() {
 					@Override
 					public void run() {
@@ -43,13 +41,9 @@ public class AnimatorClock {
 		    					it.remove();
 		    				}
 		    			}
-  		    			for (Iterator<Entry<Integer,UUID>> it = main.getEntityHider().EntityMap.entrySet().iterator(); it.hasNext();) {
-		    				Entry<Integer, UUID> u = it.next();
-		    				if (Bukkit.getEntity(u.getValue())==null) it.remove();
-		    			}
 					}
 				}.runTaskAsynchronously(main.inst());
-				AnimatorClock.currentCleanUpTick=0;
+				this.currentCleanUpTick=0;
 			}
 
 			private void aiClock(ArmorStandAnimator asa) {
