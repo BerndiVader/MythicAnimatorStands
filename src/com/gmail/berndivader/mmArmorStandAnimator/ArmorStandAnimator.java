@@ -148,7 +148,6 @@ public class ArmorStandAnimator {
 				y = l.getYaw();
 				p = l.getPitch();
 			}
-			Bukkit.getLogger().info("still updating!");
 			nmsutils.SetNMSLocation(asa.armorStand,
 					aim.getEntity().getLocation().getX(),
 					aim.getEntity().getLocation().getY(),

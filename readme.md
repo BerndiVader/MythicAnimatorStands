@@ -1,7 +1,7 @@
 # AnimateStands 4 MythicMobs
 #####build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires ProtocolLib & MythicMobs 4.0.0 or higher
 
-** 4.6.2017 update 0.461a: dropped ProtocolLib support gone back to use invisibility for the ai mobs because of the poor damage handling for armorstands.
+** 6.6.2017 update 0.461a: dropped ProtocolLib support gone back to use invisibility for the ai mobs because of the poor damage handling for armorstands.
 #####
 ** 29.5.2017 update 0.46a: some more internal improvements. fixed a DamageEntityEvent NPE if there is no ai for the animatorstand.
 #####
