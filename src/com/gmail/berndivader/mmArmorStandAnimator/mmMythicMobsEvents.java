@@ -26,7 +26,6 @@ import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.skills.SkillCondition;
 import io.lumine.xikage.mythicmobs.skills.SkillMechanic;
 import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
-import io.lumine.xikage.mythicmobs.skills.TriggeredSkill;
 
 public class mmMythicMobsEvents implements Listener {
 	
@@ -99,7 +98,7 @@ public class mmMythicMobsEvents implements Listener {
 				if (MythicMobs.inst().getMobManager().isActiveMob(u)) {
 					ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(u).get();
 					am.setTarget(BukkitAdapter.adapt(e.getEntity()));
-					new TriggeredSkill(SkillTrigger.ATTACK, am, BukkitAdapter.adapt(e.getEntity()));
+					new AbstractTriggeredSkill(SkillTrigger.ATTACK, am, BukkitAdapter.adapt(e.getEntity()));
 				}
 				return;
 			} else if (e.getEntity().hasMetadata("aiMob")) {
@@ -108,7 +107,7 @@ public class mmMythicMobsEvents implements Listener {
 					ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(u).get();
 					AbstractEntity damager = getAttacker(ed.getDamager());
 					am.setLastAggroCause(damager);
-					new TriggeredSkill(SkillTrigger.DAMAGED, am, damager);
+					new AbstractTriggeredSkill(SkillTrigger.DAMAGED, am, damager);
 				}
 				return;
 			}
@@ -117,7 +116,7 @@ public class mmMythicMobsEvents implements Listener {
 				UUID u = this.getUUIDbyMeta(e.getEntity());
 				if (MythicMobs.inst().getMobManager().isActiveMob(u)) {
 					ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(u).get();
-					new TriggeredSkill(SkillTrigger.DAMAGED, am, null);
+					new AbstractTriggeredSkill(SkillTrigger.DAMAGED, am, null);
 				}
 			}
 		}
@@ -150,7 +149,7 @@ public class mmMythicMobsEvents implements Listener {
         	UUID u = this.getUUIDbyMeta(l);
         	if (MythicMobs.inst().getMobManager().isActiveMob(u)) {
         		ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(u).get();
-                TriggeredSkill ts = new TriggeredSkill(SkillTrigger.INTERACT, am, BukkitAdapter.adapt(e.getPlayer()), true);
+        		AbstractTriggeredSkill ts = new AbstractTriggeredSkill(SkillTrigger.INTERACT, am, BukkitAdapter.adapt(e.getPlayer()), null, true);
                 if (ts.getCancelled()) {
                     e.setCancelled(true);
                 }
@@ -166,7 +165,7 @@ public class mmMythicMobsEvents implements Listener {
 				ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(u).get();
 				AbstractEntity killer = BukkitAdapter.adapt(e.getKiller());
 				am.setLastAggroCause(killer);
-				new TriggeredSkill(SkillTrigger.DEATH, am, killer);
+				new AbstractTriggeredSkill(SkillTrigger.DEATH, am, killer);
 				final ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(am.getEntity());
 				asa.isDying = true;
 				new BukkitRunnable() {
