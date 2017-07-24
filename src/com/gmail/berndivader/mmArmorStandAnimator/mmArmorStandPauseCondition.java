@@ -10,7 +10,11 @@ public class mmArmorStandPauseCondition extends SkillCondition implements IEntit
 	
 	public mmArmorStandPauseCondition(String line, MythicLineConfig mlc) {
 		super(line);
-		this.setAction(ConditionAction.TRUE);
+		try {
+			this.ACTION = ConditionAction.valueOf(mlc.getString(new String[]{"action","a"}, "TRUE").toUpperCase());
+		} catch (Exception ex) {
+			this.ACTION = ConditionAction.TRUE;
+		}
 	}
 
 	@Override

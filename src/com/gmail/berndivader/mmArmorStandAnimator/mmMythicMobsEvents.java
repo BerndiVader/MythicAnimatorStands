@@ -12,6 +12,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
@@ -37,19 +39,24 @@ public class mmMythicMobsEvents implements Listener {
 		if (e.getMechanicName().toUpperCase().equals("ASINIT")) {
 			SkillMechanic skill = new mmArmorStandInitMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-		} else if (e.getMechanicName().toUpperCase().equals("ASUNLOAD")) {
+			return;
+		} if (e.getMechanicName().toUpperCase().equals("ASUNLOAD")) {
 			SkillMechanic skill = new mmArmorStandUnloadMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-		} else if (e.getMechanicName().toUpperCase().equals("ASPAUSE")) {
+			return;
+		} if (e.getMechanicName().toUpperCase().equals("ASPAUSE")) {
 			SkillMechanic skill = new mmArmorStandPauseMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-		} else if (e.getMechanicName().toUpperCase().equals("ASRUN")) {
+			return;
+		} if (e.getMechanicName().toUpperCase().equals("ASRUN")) {
 			SkillMechanic skill = new mmArmorStandRunMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-		} else if (e.getMechanicName().toUpperCase().equals("ASCHANGE")) {
+			return;
+		} if (e.getMechanicName().toUpperCase().equals("ASCHANGE")) {
 			SkillMechanic skill = new mmArmorStandChangeAnimMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-		} else if (e.getMechanicName().toUpperCase().equals("ASLOOKAT")) {
+			return;
+		} if (e.getMechanicName().toUpperCase().equals("ASLOOKAT")) {
 			SkillMechanic skill = new mmArmorStandLookAtMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
 		}
@@ -60,8 +67,13 @@ public class mmMythicMobsEvents implements Listener {
 		if (e.getConditionName().toUpperCase().equals("ANIMATESTANDPAUSED")) {
 			SkillCondition condition = new mmArmorStandPauseCondition(e.getConditionName(),e.getConfig());
 			e.register(condition);
-		} else if (e.getConditionName().toUpperCase().equals("ISANIMATESTAND")) {
+			return;
+		} if (e.getConditionName().toUpperCase().equals("ISANIMATESTAND")) {
 			SkillCondition condition = new mmArmorStandIsAnimator(e.getConditionName(),e.getConfig());
+			e.register(condition);
+			return;
+		} if (e.getConditionName().toUpperCase().equals("AIMOBTARGETDISTANCE")) {
+			SkillCondition condition = new mmArmorStandaiMobTargetDistance(e.getConditionName(),e.getConfig());
 			e.register(condition);
 		}
 	}
@@ -127,7 +139,25 @@ public class mmMythicMobsEvents implements Listener {
 			}
 		}
 	}
-	
+
+    @EventHandler
+    public void onInteractTrigger(PlayerInteractAtEntityEvent e) {
+        if (MythicMobs.inst().getMinecraftVersion() >= 9 && e.getHand() != EquipmentSlot.HAND) {
+            return;
+        }
+        Entity l = e.getRightClicked();
+        if (l.hasMetadata("aiMob")) {
+        	UUID u = this.getUUIDbyMeta(l);
+        	if (MythicMobs.inst().getMobManager().isActiveMob(u)) {
+        		ActiveMob am = MythicMobs.inst().getMobManager().getActiveMob(u).get();
+                TriggeredSkill ts = new TriggeredSkill(SkillTrigger.INTERACT, am, BukkitAdapter.adapt(e.getPlayer()), true);
+                if (ts.getCancelled()) {
+                    e.setCancelled(true);
+                }
+        	}
+        }
+    }
+    
 	@EventHandler
 	public void mmaiMobDeathEvent(MythicMobDeathEvent e) {
 		if (e.getEntity().hasMetadata("aiMob")) {

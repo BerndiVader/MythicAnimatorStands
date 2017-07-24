@@ -2,7 +2,10 @@
 #####build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires MythicMobs 4.0.0 or higher and Spigot 1.9.2 or higher
 
 
+** 24.7.2017 update 0.465a: fixed bug where animatorstands are not interactable. Added aimobtargetdistance{d=RangedValue;a=true/false} condition
+#####
 ** 19.6.2017 update 0.462a: added support for 1.12. Dropped support for 1.8
+#####
 ** 6.6.2017 update 0.461a: dropped ProtocolLib support gone back to use invisibility for the ai mobs because of the poor damage handling for armorstands.
 #####
 ** 29.5.2017 update 0.46a: some more internal improvements. fixed a DamageEntityEvent NPE if there is no ai for the animatorstand.
@@ -71,17 +74,23 @@ Simple as that. There are no other options.
 ```
 Also pretty simple. No other options here neither.
 ######
-### TargetConditions: - AnimateStandPaused
+### Conditions: - AnimateStandPaused
 ```
- - AnimateStandPaused
+ - AnimateStandPaused{a=true/false}
 ```
 Meet the condition if the animation is paused or not if not.
 ######
-### TargetConditions: - isAnimateStand
+### Conditions: - isAnimateStand
 ```
  - isAnimateStand
 ```
 Meet the condition if the MythicMob is an AnimateStand or false if not.
+######
+### Conditions: - aimobtargetdistance
+```
+ - aimobtargetdistance{d=RangedValue;a=true/false}
+```
+Meet the condition if the animatorstand have a aimob and that aimob have a target where the distance rangedvalue meet or not.
 #
 #
 Examples:

@@ -143,7 +143,7 @@ public class ArmorStandUtils {
             } else {
                 loc.setYaw((float) (0.5 * Math.PI));
             }
-            loc.setYaw((float) loc.getYaw() - (float) Math.atan(dz / dx));
+            loc.setYaw(loc.getYaw() - (float) Math.atan(dz / dx));
         } else if (dz < 0) {
             loc.setYaw((float) Math.PI);
         }
