@@ -29,9 +29,11 @@ IEntityCondition {
 		ArmorStandAnimator asa = ArmorStandUtils.getAnimatorInstance(entity);
 		if (asa!=null && asa.hasAI()) {
 			ActiveMob aiMob = asa.aiMob;
-			AbstractEntity target = aiMob.getEntity().getTarget();
-	        double diffSq = (float)entity.getLocation().distanceSquared(target.getLocation());
-	        return this.distance.equals(diffSq);
+			if (aiMob.getEntity().getTarget()!=null) {
+				AbstractEntity target = aiMob.getEntity().getTarget();
+		        double diffSq = (float)entity.getLocation().distanceSquared(target.getLocation());
+		        return this.distance.equals(diffSq);
+			}
 		}
 		return false;
 	}
