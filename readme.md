@@ -3,6 +3,7 @@
 
 # If you look for the version without ProtocolLib go here: https://github.com/BerndiVader/mmArmorStandAnimator/tree/noProtocolLib
 
+** 25.8.2017 iüdate 0-462a: added 1.12.1 support
 ** 29.6.2017 update 0.461a: added NMS for 1.12 and dropped support for 1.8
 #####
 ** 29.5.2017 update 0.46a: some more internal improvements. fixed a DamageEntityEvent NPE if there is no ai for the animatorstand.
