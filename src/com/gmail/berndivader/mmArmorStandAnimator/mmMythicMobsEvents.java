@@ -28,52 +28,66 @@ import io.lumine.xikage.mythicmobs.skills.SkillMechanic;
 import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
 
 public class mmMythicMobsEvents implements Listener {
-	
 	public mmMythicMobsEvents() {
 		Bukkit.getServer().getPluginManager().registerEvents(this, main.inst());
 	}
 	
 	@EventHandler
 	public void mmMythicMobsMechanicsLoad(MythicMechanicLoadEvent e) {
-		if (e.getMechanicName().toUpperCase().equals("ASINIT")) {
+		String m = e.getMechanicName().toLowerCase();
+		switch (m) {
+		case "asinit": {
 			SkillMechanic skill = new mmArmorStandInitMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-			return;
-		} if (e.getMechanicName().toUpperCase().equals("ASUNLOAD")) {
+			break;
+		}
+		case "asunload": {
 			SkillMechanic skill = new mmArmorStandUnloadMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-			return;
-		} if (e.getMechanicName().toUpperCase().equals("ASPAUSE")) {
+			break;
+		}
+		case "aspause": {
 			SkillMechanic skill = new mmArmorStandPauseMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-			return;
-		} if (e.getMechanicName().toUpperCase().equals("ASRUN")) {
+			break;
+		}
+		case "asrun": {
 			SkillMechanic skill = new mmArmorStandRunMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-			return;
-		} if (e.getMechanicName().toUpperCase().equals("ASCHANGE")) {
+			break;
+		}
+		case "aschange": {
 			SkillMechanic skill = new mmArmorStandChangeAnimMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
-			return;
-		} if (e.getMechanicName().toUpperCase().equals("ASLOOKAT")) {
+			break;
+		}
+		case "aslookat": {
 			SkillMechanic skill = new mmArmorStandLookAtMechanic(e.getContainer().getConfigLine(),e.getConfig());
 			e.register(skill);
+			break;
+		}
 		}
 	}
 	
 	@EventHandler
 	public void mmMythicMobsConditionsLoad(MythicConditionLoadEvent e) {
-		if (e.getConditionName().toUpperCase().equals("ANIMATESTANDPAUSED")) {
-			SkillCondition condition = new mmArmorStandPauseCondition(e.getConditionName(),e.getConfig());
+		String c = e.getConditionName().toLowerCase();
+		switch (c) {
+		case "animatestandpaused": {
+			SkillCondition condition = new mmArmorStandPauseCondition(c,e.getConfig());
 			e.register(condition);
-			return;
-		} if (e.getConditionName().toUpperCase().equals("ISANIMATESTAND")) {
-			SkillCondition condition = new mmArmorStandIsAnimator(e.getConditionName(),e.getConfig());
+			break;
+		}
+		case "isanimatestand": {
+			SkillCondition condition = new mmArmorStandIsAnimator(c,e.getConfig());
 			e.register(condition);
-			return;
-		} if (e.getConditionName().toUpperCase().equals("AIMOBTARGETDISTANCE")) {
-			SkillCondition condition = new mmArmorStandaiMobTargetDistance(e.getConditionName(),e.getConfig());
+			break;
+		}
+		case "aimobtargetdistance": {
+			SkillCondition condition = new mmArmorStandaiMobTargetDistance(c,e.getConfig());
 			e.register(condition);
+			break;
+		}
 		}
 	}
 

@@ -2,6 +2,8 @@
 #####build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires MythicMobs 4.0.0 or higher and Spigot 1.9.2 or higher
 
 
+** 25.8.2017 update 0.466a: added 1.12.1 support.
+#####
 ** 24.7.2017 update 0.465a: fixed bug where animatorstands are not interactable. Added aimobtargetdistance{d=RangedValue;a=true/false} condition
 #####
 ** 19.6.2017 update 0.462a: added support for 1.12. Dropped support for 1.8

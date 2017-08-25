@@ -2,6 +2,7 @@ package com.gmail.berndivader.mmArmorStandAnimator.NMS;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -41,7 +42,7 @@ import java.util.logging.Level;
  * 
  * Use any of this at your own risk!
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 public class NMSUtil {
     protected static boolean failed = false;
     protected static boolean legacy = false;
@@ -220,6 +221,12 @@ public class NMSUtil {
     protected static Method class_ItemStack_isEmptyMethod;
     protected static Method class_ItemStack_createStackMethod;
     protected static Method class_CraftMagicNumbers_getBlockMethod;
+    protected static Method class_Block_fromLegacyData;
+    protected static Method class_Chunk_setBlockMethod;
+    
+	protected static Method class_NBTTagCompound_getFloatMethod;
+	protected static Method class_NBTTagCompound_setFloatMethod;
+	protected static Method class_EntityLiving_writeNBTMethod;
 
     protected static Constructor class_CraftInventoryCustom_constructor;
     protected static Constructor class_EntityFireworkConstructor;
@@ -537,11 +544,25 @@ public class NMSUtil {
             // TODO: World.getNearbyEntities in 1.11+
             class_AxisAlignedBB_Constructor = class_AxisAlignedBB.getConstructor(Double.TYPE, Double.TYPE, Double.TYPE, Double.TYPE, Double.TYPE, Double.TYPE);
             class_World_getEntitiesMethod = class_World.getMethod("getEntities", class_Entity, class_AxisAlignedBB);
+            
+			class_NBTTagCompound_getFloatMethod = class_NBTTagCompound.getMethod("getFloat", String.class);
+			class_NBTTagCompound_setFloatMethod = class_NBTTagCompound.getMethod("setFloat", String.class, Float.TYPE);
+			
+			class_EntityLiving_writeNBTMethod = class_EntityLiving.getMethod("a", class_NBTTagCompound);
+			class_EntityLiving_writeNBTMethod.setAccessible(true);			
 
             // We don't want to consider new-ish builds as "legacy" and print a warning, so keep a separate flag
             boolean current = true;
 
             // Particularly volatile methods that we can live without
+            try {
+                Class<?> class_IBlockData = fixBukkitClass("net.minecraft.server.IBlockData");
+                class_Block_fromLegacyData = class_Block.getMethod("fromLegacyData", Integer.TYPE);
+                class_Chunk_setBlockMethod = class_Chunk.getMethod("a", class_BlockPosition, class_IBlockData);
+            } catch (Throwable ex) {
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering Block.fromLegacyData, setting fast blocks will not work", ex);
+            }
+
             try {
                 try {
                     // 1.12
@@ -653,8 +674,13 @@ public class NMSUtil {
             }
 
             try {
+                try {
+                    // 1.12.1
+                    class_TileEntity_loadMethod = class_TileEntity.getMethod("load", class_NBTTagCompound);
+                } catch (Throwable ignore) {
+                    class_TileEntity_loadMethod = class_TileEntity.getMethod("a", class_NBTTagCompound);
+                }
                 class_CraftWorld_getTileEntityAtMethod = class_CraftWorld.getMethod("getTileEntityAt", Integer.TYPE, Integer.TYPE, Integer.TYPE);
-                class_TileEntity_loadMethod = class_TileEntity.getMethod("a", class_NBTTagCompound);
                 class_TileEntity_updateMethod = class_TileEntity.getMethod("update");
                 class_TileEntity_saveMethod = class_TileEntity.getMethod("save", class_NBTTagCompound);
             } catch (Throwable ex) {
@@ -912,7 +938,7 @@ public class NMSUtil {
     public static Class<?> getClass(String className) {
         Class<?> result = null;
         try {
-            result = NMSUtils.class.getClassLoader().loadClass(className);
+            result = NMSUtil.class.getClassLoader().loadClass(className);
         } catch (Exception ex) {
             result = null;
         }
@@ -937,7 +963,7 @@ public class NMSUtil {
             className = className.replace("net.minecraft.server.", "net.minecraft.server." + versionPrefix);
         }
 
-        return NMSUtils.class.getClassLoader().loadClass(className);
+        return NMSUtil.class.getClassLoader().loadClass(className);
     }
 
     public static Object getHandle(org.bukkit.Server server) {
@@ -1820,4 +1846,16 @@ public class NMSUtil {
         }
         return false;
     }
+    
+	public static boolean setMetaFloat(Object node, String tag, float value) {
+		if (node == null || !class_NBTTagCompound.isInstance(node))
+			return false;
+		try {
+			class_NBTTagCompound_setFloatMethod.invoke(node, tag, value);
+			return true;
+		} catch (Throwable ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}    
 }
