@@ -46,7 +46,7 @@ public class ArmorStandUtils {
 		ArmorStandAnimator asa  = getAnimatorInstance(entity);
 		if (asa!=null) {
 			try {
-				File f = new File(MythicMobs.inst().getDataFolder()+"\\Anims", animFile);
+				File f = new File(MythicMobs.inst().getDataFolder()+"/Anims", animFile);
 				asa.changeAnim(f, animSpeed);
 			} catch (Exception e) {
 				Bukkit.getLogger().warning("Could not load animation: " + animFile);

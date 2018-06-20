@@ -1,4 +1,4 @@
 name: AnimatorStands
 main: com.gmail.berndivader.animatorstands.AnimatorStands
-version: 0.467a
+version: 0.468a
 depend: [MythicMobs]
