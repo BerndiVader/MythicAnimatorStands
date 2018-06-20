@@ -1,9 +1,10 @@
-# AnimateStands 4 MythicMobs
+# AnimateStands 4 MythicMobs - ProtocolLib version is discontinued. Please use the noProtocolLib version. https://github.com/BerndiVader/mmArmorStandAnimator/tree/noProtocolLib
+
 #####build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires ProtocolLib & MythicMobs 4.0.0 or higher
 
 # If you look for the version without ProtocolLib go here: https://github.com/BerndiVader/mmArmorStandAnimator/tree/noProtocolLib
 
-** 25.8.2017 iüdate 0-462a: added 1.12.1 support
+** 25.8.2017 iÃ¼date 0-462a: added 1.12.1 support
 ** 29.6.2017 update 0.461a: added NMS for 1.12 and dropped support for 1.8
 #####
 ** 29.5.2017 update 0.46a: some more internal improvements. fixed a DamageEntityEvent NPE if there is no ai for the animatorstand.
