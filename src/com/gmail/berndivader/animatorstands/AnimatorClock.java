@@ -36,14 +36,16 @@ public class AnimatorClock {
 		    			for (Iterator<ArmorStandAnimator> it = ArmorStandAnimator.getAnimators().iterator(); it.hasNext();) {
 		    				ArmorStandAnimator asa = it.next();
 		    				if (asa!=null) {
-		    					if (asa.getArmorStand()==null || asa.getArmorStand().isDead()) it.remove();
+		    					if (asa.getArmorStand()==null || asa.getArmorStand().isDead()) {
+		    						if(asa.hasAI()) asa.aiMob.setDead();
+		    						it.remove();
+		    					}
 		    				} else {
 		    					it.remove();
 		    				}
 		    			}
 					}
 				}.runTaskAsynchronously(AnimatorStands.inst());
-				this.currentCleanUpTick=0;
 			}
 
 			private void aiClock(ArmorStandAnimator asa) {

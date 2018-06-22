@@ -25,6 +25,7 @@ import com.gmail.berndivader.animatorstands.mechanics.ArmorStandLookAtMechanic;
 import com.gmail.berndivader.animatorstands.mechanics.ArmorStandPauseMechanic;
 import com.gmail.berndivader.animatorstands.mechanics.ArmorStandRunMechanic;
 import com.gmail.berndivader.animatorstands.mechanics.ArmorStandUnloadMechanic;
+import com.gmail.berndivader.animatorstands.targeters.AiMobTargeter;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
@@ -32,6 +33,7 @@ import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicConditionLoadEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMechanicLoadEvent;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicTargeterLoadEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.skills.SkillCondition;
 import io.lumine.xikage.mythicmobs.skills.SkillMechanic;
@@ -98,6 +100,13 @@ public class MythicMobsEvents implements Listener {
 			e.register(condition);
 			break;
 		}
+		}
+	}
+	
+	@EventHandler
+	public void MythicMobTargeterLoad(MythicTargeterLoadEvent e) {
+		if(e.getTargeterName().toLowerCase().equals("aitarget")) {
+			e.register(new AiMobTargeter(e.getConfig()));
 		}
 	}
 

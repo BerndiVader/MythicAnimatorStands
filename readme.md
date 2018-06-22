@@ -1,6 +1,8 @@
 # AnimatorStands 4 MythicMobs
 #####build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires MythicMobs 4.0.0 or higher and Spigot 1.9.2 or higher
 
+** 21.6.2018 update 0.468b: added aitarget targeter. See aitarget for details.
+#####
 ** 16.6.2018 update 0.468a: fixed issue with aschange mechanic on unix based system.
 #####
 ** 02.2.2018 update 0.467a: added 1.12.2 support.
@@ -96,6 +98,12 @@ Meet the condition if the MythicMob is an AnimateStand or false if not.
  - aimobtargetdistance{d=RangedValue;a=true/false}
 ```
 Meet the condition if the animatorstand have a aimob and that aimob have a target where the distance rangedvalue meet or not.
+######
+### Targeter: - aitarget
+```
+@aitarget
+```
+If the animatorstand has an aimob use this targeter to target the aimobs target inside the animatorstand skills.
 #
 #
 Examples:
