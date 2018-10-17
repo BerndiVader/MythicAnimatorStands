@@ -1,6 +1,7 @@
 # AnimatorStands 4 MythicMobs
-#####build up on Bram Stout's ArmorStandAnimator Class, thx alot to him. Requires MythicMobs 4.0.0 or higher and Spigot 1.9.2 or higher
 
+**17.10.2018 update 0.470a: added 1.13.x support.
+#####
 ** 21.6.2018 update 0.468b: added aitarget targeter. See aitarget for details.
 #####
 ** 16.6.2018 update 0.468a: fixed issue with aschange mechanic on unix based system.
