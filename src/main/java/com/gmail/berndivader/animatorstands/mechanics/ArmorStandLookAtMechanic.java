@@ -2,9 +2,9 @@ package com.gmail.berndivader.animatorstands.mechanics;
 
 import org.bukkit.Location;
 
-import com.gmail.berndivader.animatorstands.AnimatorStands;
 import com.gmail.berndivader.animatorstands.ArmorStandAnimator;
 import com.gmail.berndivader.animatorstands.ArmorStandUtils;
+import com.gmail.berndivader.animatorstands.NMS.NMSUtils;
 
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
@@ -27,7 +27,7 @@ public class ArmorStandLookAtMechanic extends SkillMechanic implements ITargeted
 		ArmorStandAnimator e = ArmorStandUtils.getAnimatorInstance(data.getCaster().getEntity());
 		if (e==null) return false;
 		Location l = ArmorStandUtils.lookAt(e.getArmorStand().getLocation(), BukkitAdapter.adapt(target));
-		AnimatorStands.NMSUtils().setRotation(e.getArmorStand(), l.getYaw(), l.getPitch());
+		NMSUtils.setRotation(e.getArmorStand(), l.getYaw(), l.getPitch());
 		return true;
 	}
 

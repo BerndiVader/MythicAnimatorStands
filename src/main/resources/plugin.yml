@@ -1,4 +1,4 @@
-name: AnimatorStands
+name: MythicAnimatorStands
 main: com.gmail.berndivader.animatorstands.AnimatorStands
-version: 0.470a
+version: ${version}
 depend: [MythicMobs]

@@ -36,7 +36,6 @@ import io.lumine.xikage.mythicmobs.skills.targeters.MTOrigin;
 import io.lumine.xikage.mythicmobs.skills.targeters.MTTriggerLocation;
 
 public class ArmorStandAnimator {
-	private static NMSUtils nmsutils = AnimatorStands.NMSUtils();
 	private static Map<String, Frame[]> animCache = new HashMap<String, Frame[]>();
 	public static ConcurrentHashMap<UUID, ArmorStandAnimator> animators = new ConcurrentHashMap<UUID,ArmorStandAnimator>();
 
@@ -108,8 +107,8 @@ public class ArmorStandAnimator {
 	}
 	
 	public static void doAI(ArmorStandAnimator asa) {
-    	ActiveMob aim = MythicMobs.inst().getMobManager().getMythicMobInstance(asa.aiMob.getEntity());
-    	ActiveMob aam = MythicMobs.inst().getMobManager().getMythicMobInstance(asa.am.getEntity());
+		ActiveMob aim=asa.aiMob;
+		ActiveMob aam=asa.am;
     	if (aam==null) {
     		if (aim!=null) ArmorStandUtils.removeEntitySync(aim.getEntity().getBukkitEntity());
     		ArmorStandUtils.removeEntitySync(asa.getArmorStand());
@@ -148,7 +147,7 @@ public class ArmorStandAnimator {
 				y = l.getYaw();
 				p = l.getPitch();
 			}
-			nmsutils.SetNMSLocation(asa.armorStand,
+			NMSUtils.SetNMSLocation(asa.armorStand,
 					aim.getEntity().getLocation().getX(),
 					aim.getEntity().getLocation().getY(),
 					aim.getEntity().getLocation().getZ(),
@@ -234,7 +233,7 @@ public class ArmorStandAnimator {
 		Bukkit.getScheduler().runTaskLater(AnimatorStands.inst(), new Runnable() {
 			@Override
 			public void run() {
-				ActiveMob aim = MythicMobs.inst().getAPIHelper().getMythicMobInstance(aiMob.getLivingEntity());
+				ActiveMob aim = aiMob;
 				if (aim!=null) {
 					aim.getLivingEntity().setCanPickupItems(false);
 				}
@@ -405,14 +404,14 @@ public class ArmorStandAnimator {
 					if (!this.hasAI) {
 						Location newLoc = startLocation.clone().add(f.x, f.y, f.z);
 						newLoc.setYaw(f.r + newLoc.getYaw());
-						nmsutils.SetNMSLocation(e, newLoc.getX(), newLoc.getY(), newLoc.getZ(), newLoc.getYaw(), e.getLocation().getPitch());
+						NMSUtils.SetNMSLocation(e, newLoc.getX(), newLoc.getY(), newLoc.getZ(), newLoc.getYaw(), e.getLocation().getPitch());
 					}
 				} else if (!this.hasAI) {
 					double xx,yy,zz;
 					xx = e.getVehicle().getLocation().getX();
 					yy = e.getVehicle().getLocation().getY();
 					zz = e.getVehicle().getLocation().getZ();
-					nmsutils.SetNMSLocation(e.getVehicle(), xx, yy, zz, e.getVehicle().getLocation().getYaw()+f.r, e.getVehicle().getLocation().getPitch());
+					NMSUtils.SetNMSLocation(e.getVehicle(), xx, yy, zz, e.getVehicle().getLocation().getYaw()+f.r, e.getVehicle().getLocation().getPitch());
 				}
 				armorStand.setBodyPose(f.middle);
 				armorStand.setLeftLegPose(f.leftLeg);
@@ -515,7 +514,7 @@ public class ArmorStandAnimator {
 		int frameID;
 		String aiMobName,doSkill;
 		boolean autoInit;
-		float x,y,z,r,p;
+		float x,y,z,r;
 		EulerAngle middle,rightLeg,leftLeg,rightArm,leftArm,head;
 		
 		public Frame mult(float a,int frameID) {

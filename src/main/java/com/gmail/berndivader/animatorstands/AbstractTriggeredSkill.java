@@ -20,11 +20,7 @@ implements IParentSkill {
     public AbstractTriggeredSkill(SkillTrigger cause, ActiveMob am, AbstractEntity trigger, AbstractLocation origin, boolean sync) {
         this.data = new SkillMetadata(cause, am, trigger);
         this.data.setCallingEvent(this);
-        if (sync) {
-            this.data.setIsAsync(false);
-        } else {
-            this.data.setIsAsync(true);
-        }
+        this.data.setIsAsync(!sync);
         if (this.data.getTrigger() != null) {
             if (am instanceof ActiveMob) {
                 am.setLastAggroCause(this.data.getTrigger());
