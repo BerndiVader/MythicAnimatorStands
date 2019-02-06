@@ -1,5 +1,8 @@
 # AnimatorStands 4 MythicMobs
 
+## [DOWNLOAD](http://mc.hackerzlair.org:8080/job/MythicAnimatorStands/) [![Build Status](http://mc.hackerzlair.org:8080/job/MythicAnimatorStands/badge/icon)] <br>
+
+**06.02.2019 update 0.471: moved project to gradle.
 **17.10.2018 update 0.470a: added 1.13.x support.
 #####
 ** 21.6.2018 update 0.468b: added aitarget targeter. See aitarget for details.
