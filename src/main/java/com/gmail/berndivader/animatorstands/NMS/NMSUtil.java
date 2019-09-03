@@ -9,11 +9,12 @@ public class NMSUtil {
 
     protected static Class<?> class_Entity;
     protected static Class<?> class_CraftEntity;
+	protected static Class<?> class_AbstractSkill;
     
     protected static Method class_CraftEntity_getHandleMethod;
     protected static Method class_Entity_setYawPitchMethod;
     protected static Method class_Entity_setLocationMethod;
-    
+    protected static Method class_AbstractSkill_parseSkillTargeterMethod;
 
     static
     {
@@ -36,6 +37,8 @@ public class NMSUtil {
             
             class_Entity_setLocationMethod = class_Entity.getMethod("setLocation", Double.TYPE, Double.TYPE, Double.TYPE, Float.TYPE, Float.TYPE);
             
+			class_AbstractSkill=fixBukkitClass("io.lumine.xikage.mythicmobs.skills.AbstractSkill");
+	        class_AbstractSkill_parseSkillTargeterMethod=class_AbstractSkill.getDeclaredMethod("parseSkillTargeter",String.class);
             
         } catch(Exception ex) {
         	//Empty

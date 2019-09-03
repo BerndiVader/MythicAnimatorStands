@@ -24,7 +24,6 @@ import com.gmail.berndivader.animatorstands.NMS.NMSUtils;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import io.lumine.xikage.mythicmobs.skills.AbstractSkill;
 import io.lumine.xikage.mythicmobs.skills.Skill;
 import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
 import io.lumine.xikage.mythicmobs.skills.SkillTargeter;
@@ -69,7 +68,7 @@ public class ArmorStandAnimator {
 	    if (skillName.contains("@")) {
 	    	String[] split = skillName.split("@");
 	    	target = "@"+split[1].split(" ")[0];
-	    	maybeTargeter = Optional.of(AbstractSkill.parseSkillTargeter(target));
+	    	maybeTargeter = Optional.of((SkillTargeter)NMSUtils.parseSkillTargeter(target));
 	    }
 	    if (maybeTargeter.isPresent()) {
             SkillTargeter targeter = maybeTargeter.get();
