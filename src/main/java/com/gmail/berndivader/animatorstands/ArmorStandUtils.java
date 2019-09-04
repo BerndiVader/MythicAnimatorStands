@@ -17,7 +17,9 @@ import org.bukkit.util.BlockIterator;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
+import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import io.lumine.xikage.mythicmobs.skills.SkillTargeter;
 
 public class ArmorStandUtils {
 
@@ -178,5 +180,19 @@ public class ArmorStandUtils {
 			}
 		}.runTaskLater(AnimatorStands.inst(), runlater);
 	}
+	
+	/**
+	 * 
+	 * @param targeter_string {@link String}
+	 * @return skill_targeter {@link SkillTargeter}
+	 */
+	
+	public static SkillTargeter parseSkillTargeter(String targeter_string) {
+        String search = targeter_string.substring(1);
+        MythicLineConfig mlc = new MythicLineConfig(search);
+        String name = search.contains("{") ? search.substring(0, search.indexOf("{")) : search;
+        return SkillTargeter.getMythicTargeter(name, mlc);
+	}
+	
 	
 }

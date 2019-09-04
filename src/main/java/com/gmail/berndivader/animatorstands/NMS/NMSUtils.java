@@ -1,10 +1,6 @@
 package com.gmail.berndivader.animatorstands.NMS;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.bukkit.entity.Entity;
-
-import io.lumine.xikage.mythicmobs.skills.SkillTargeter;
 
 public class NMSUtils extends NMSUtil {
     
@@ -25,22 +21,5 @@ public class NMSUtils extends NMSUtil {
     		ex.printStackTrace();
     	}
     }
-    
-	/**
-	 * 
-	 * @param targeter_string {@link String}
-	 * @return skill_targeter {@link SkillTargeter}
-	 */
-	
-	public static SkillTargeter parseSkillTargeter(String targeter_string) {
-		SkillTargeter targeter=null;
-		try {
-			targeter=(SkillTargeter)class_AbstractSkill_parseSkillTargeterMethod.invoke(null,targeter_string);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		return targeter;
-	}
-    
     
 }

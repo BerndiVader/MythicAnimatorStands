@@ -68,7 +68,7 @@ public class ArmorStandAnimator {
 	    if (skillName.contains("@")) {
 	    	String[] split = skillName.split("@");
 	    	target = "@"+split[1].split(" ")[0];
-	    	maybeTargeter = Optional.of((SkillTargeter)NMSUtils.parseSkillTargeter(target));
+	    	maybeTargeter = Optional.of((SkillTargeter)ArmorStandUtils.parseSkillTargeter(target));
 	    }
 	    if (maybeTargeter.isPresent()) {
             SkillTargeter targeter = maybeTargeter.get();
