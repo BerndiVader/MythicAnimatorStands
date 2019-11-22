@@ -9,8 +9,8 @@ public class AnimatorClock {
 	public AnimatorClock() {
 		
 		new BukkitRunnable() {
-			private long CleanUpTick=600, currentCleanUpTick=0;
-			private long currentAiTick=0, AiClock=0;
+			private long cleanUpTick=600, currentCleanUpTick=0;
+			private long aiClock=0, currentAiTick=0;
 			@Override
 			public void run() {
 				this.currentCleanUpTick++;
@@ -22,10 +22,10 @@ public class AnimatorClock {
 						this.animClock(asa);
 						asa.currentAnimTick = 0;
 					}
-					if (this.currentAiTick>=this.AiClock) this.aiClock(asa);
+					if (this.currentAiTick>=this.aiClock) this.aiClock(asa);
 				}
-				if (this.currentCleanUpTick>=this.CleanUpTick) cleanUpClock();
-				if (this.currentAiTick>=this.AiClock) this.currentAiTick = 0;
+				if (this.currentCleanUpTick>=this.cleanUpTick) cleanUpClock();
+				if (this.currentAiTick>=this.aiClock) this.currentAiTick = 0;
 			}
 			
 			private void cleanUpClock() {

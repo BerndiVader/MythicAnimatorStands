@@ -27,7 +27,7 @@ public class ArmorStandUtils {
 		ArmorStandAnimator asa=getAnimatorInstance(entity);
 		if (asa!=null) {
 			if (asa.aiMobName!=null && asa.aiMob.getEntity().isDead()) {
-				if (checkForNearByPlayers(entity.getBukkitEntity(), 16000.0D)) {
+				if (checkForNearByPlayers(entity.getBukkitEntity(), 16000.0d)) {
 					asa.reAttachAIMob();
 				}
 			}

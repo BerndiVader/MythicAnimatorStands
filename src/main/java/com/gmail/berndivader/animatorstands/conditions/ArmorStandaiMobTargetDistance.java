@@ -24,7 +24,7 @@ IEntityCondition {
 			this.ACTION = ConditionAction.TRUE;
 		}
         String d = mlc.getString(new String[]{"distance", "d"},"5");
-        this.distance = new RangedDouble(d, true);
+        this.distance = new RangedDouble(d,true);
 	}
 
 	@Override

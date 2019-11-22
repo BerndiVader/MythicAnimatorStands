@@ -37,11 +37,8 @@ public class NMSUtil {
             
             class_Entity_setLocationMethod = class_Entity.getMethod("setLocation", Double.TYPE, Double.TYPE, Double.TYPE, Float.TYPE, Float.TYPE);
             
-			class_AbstractSkill=fixBukkitClass("io.lumine.xikage.mythicmobs.skills.AbstractSkill");
-	        class_AbstractSkill_parseSkillTargeterMethod=class_AbstractSkill.getDeclaredMethod("parseSkillTargeter",String.class);
-            
         } catch(Exception ex) {
-        	//Empty
+        	ex.printStackTrace();
         }
     }
     

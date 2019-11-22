@@ -3,6 +3,8 @@ package com.gmail.berndivader.animatorstands;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +22,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.EulerAngle;
 
 import com.gmail.berndivader.animatorstands.NMS.NMSUtils;
+import com.google.gson.Gson;
 
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
@@ -57,6 +60,21 @@ public class ArmorStandAnimator {
 	
 	public static void clearCache() {
 		animCache.clear();
+	}
+	
+	public static String convertAnim(File file) {
+		MiFrame miFrame=null;
+		try (FileReader reader=new FileReader(file.getAbsoluteFile())) {
+			miFrame=new Gson().fromJson(reader,MiFrame.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if(miFrame!=null) {
+			return miFrame.toString();
+		} else {
+			return "";
+		}
+		
 	}
 
 	private static void executeMythicMobsSkill(ArmorStandAnimator asa, String skillName) {
@@ -182,7 +200,7 @@ public class ArmorStandAnimator {
         this.AnimClock = animSpeed;
         this.currentAnimTick = 0;
 		startLocation = armorStand.getLocation();
-		if (oi!=null) this.autoInit = (Boolean)oi;
+		if (oi!=null) this.autoInit = (boolean)oi;
 		this.am = MythicMobs.inst().getAPIHelper().getMythicMobInstance(armorStand);
 		if (mobtype!=null) {
 			this.aiMobName = (String)mobtype;
@@ -249,7 +267,7 @@ public class ArmorStandAnimator {
 		this.loadFrames();
 		this.play();
 	}
-
+	
 	private void loadFrames() {
 		if (animCache.containsKey(this.aniFile.getAbsolutePath())) {
 			frames = new Frame[animCache.get(aniFile.getAbsolutePath()).length];
@@ -261,7 +279,11 @@ public class ArmorStandAnimator {
 		} else {
 			BufferedReader br = null;
 			try {
-				br = new BufferedReader(new FileReader(aniFile));
+				if(this.aniFile.getName().endsWith("miframes")) {
+					br=new BufferedReader(new StringReader(convertAnim(this.aniFile)));
+				} else {
+					br = new BufferedReader(new FileReader(aniFile));
+				}
 				String line = "";
 				Frame currentFrame = null;
 				while ((line = br.readLine()) != null) {
@@ -360,7 +382,7 @@ public class ArmorStandAnimator {
 			}
 			frames[0].autoInit=this.autoInit;
 			frames[0].aiMobName=this.aiMobName;
-			animCache.put(aniFile.getAbsolutePath(), frames);
+			animCache.put(aniFile.getAbsolutePath(),frames);
 		}
 	}
 	
