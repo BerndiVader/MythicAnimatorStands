@@ -153,11 +153,22 @@ public class ArmorStandAnimator {
 			float p = aim.getEntity().getLocation().getPitch();
 			Location l=null;
 			if (asa.lastaction==2 && aim.hasTarget()) {
-				l = ArmorStandUtils.lookAt(asa.armorStand.getLocation(), aim.getEntity().getTarget().getBukkitEntity().getLocation());
+				if(aim.hasThreatTable()) {
+					if(aim.getThreatTable().size()>0) {
+						l=ArmorStandUtils.lookAt(asa.armorStand.getLocation(),aim.getThreatTable().getTopThreatHolder().getBukkitEntity().getLocation());
+					} else {
+						Location ll = ArmorStandUtils.getTargetBlock(aim.getLivingEntity(), 10);
+						if (ll!=null) {
+							l=ArmorStandUtils.lookAt(asa.armorStand.getLocation(),ll);
+						}
+					}
+				} else {
+					l=ArmorStandUtils.lookAt(asa.armorStand.getLocation(),aim.getEntity().getTarget().getBukkitEntity().getLocation());
+				}
 			} else {
 				Location ll = ArmorStandUtils.getTargetBlock(aim.getLivingEntity(), 10);
 				if (ll!=null) {
-					l = ArmorStandUtils.lookAt(asa.armorStand.getLocation(),ll);
+					l=ArmorStandUtils.lookAt(asa.armorStand.getLocation(),ll);
 				}
 			}
 			if (l!=null) {
