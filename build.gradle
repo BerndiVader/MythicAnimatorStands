@@ -30,7 +30,7 @@ dependencies {
     compileOnly  ("org.spigotmc:spigot-1.13.2:+") 
     compileOnly  ("org.spigotmc:spigot-1.12.2:+") 
     compileOnly  ("org.spigotmc:spigot-1.8.8:+") 
-    compileOnly  ("io.lumine.xikage:mythicmobs:4.7.2")
+    compileOnly  ("io.lumine.xikage:mythicmobs:+")
 }
 
 processResources {

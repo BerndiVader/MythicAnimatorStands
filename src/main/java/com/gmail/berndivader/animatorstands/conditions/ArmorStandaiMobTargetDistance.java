@@ -9,12 +9,12 @@ import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.skills.SkillCondition;
 import io.lumine.xikage.mythicmobs.skills.conditions.ConditionAction;
 import io.lumine.xikage.mythicmobs.skills.conditions.IEntityCondition;
-import io.lumine.xikage.mythicmobs.util.types.RangedDouble;
+import io.lumine.xikage.mythicmobs.utils.numbers.RandomDouble;
 
 public class ArmorStandaiMobTargetDistance extends SkillCondition 
 implements
 IEntityCondition {
-	protected RangedDouble distance;
+	protected RandomDouble distance;
 	
 	public ArmorStandaiMobTargetDistance(String line, MythicLineConfig mlc) {
 		super(line);
@@ -24,7 +24,7 @@ IEntityCondition {
 			this.ACTION = ConditionAction.TRUE;
 		}
         String d = mlc.getString(new String[]{"distance", "d"},"5");
-        this.distance = new RangedDouble(d,true);
+        this.distance = new RandomDouble(d);
 	}
 
 	@Override

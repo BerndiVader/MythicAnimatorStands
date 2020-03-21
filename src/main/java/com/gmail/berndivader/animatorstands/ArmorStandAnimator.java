@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.EulerAngle;
@@ -34,8 +35,8 @@ import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
 import io.lumine.xikage.mythicmobs.skills.targeters.ConsoleTargeter;
 import io.lumine.xikage.mythicmobs.skills.targeters.IEntitySelector;
 import io.lumine.xikage.mythicmobs.skills.targeters.ILocationSelector;
-import io.lumine.xikage.mythicmobs.skills.targeters.MTOrigin;
 import io.lumine.xikage.mythicmobs.skills.targeters.MTTriggerLocation;
+import io.lumine.xikage.mythicmobs.skills.targeters.OriginTargeter;
 
 public class ArmorStandAnimator {
 	private static Map<String, Frame[]> animCache = new HashMap<String, Frame[]>();
@@ -97,8 +98,8 @@ public class ArmorStandAnimator {
             if (targeter instanceof ILocationSelector) {
                 data.setLocationTargets(((ILocationSelector)targeter).getLocations(data));
                 ((ILocationSelector)targeter).filter(data);
-            } else if (targeter instanceof MTOrigin) {
-                data.setLocationTargets(((MTOrigin)targeter).getLocation(data.getOrigin()));
+            } else if (targeter instanceof OriginTargeter) {
+                data.setLocationTargets(((OriginTargeter)targeter).getLocation(data.getOrigin()));
             } else if (targeter instanceof MTTriggerLocation) {
                 HashSet<AbstractLocation> lTargets = new HashSet<AbstractLocation>();
                 lTargets.add(data.getTrigger().getLocation());
@@ -137,12 +138,13 @@ public class ArmorStandAnimator {
     		asa.remove();
     		return;
     	}
+		LivingEntity entity=(LivingEntity)aim.getEntity().getBukkitEntity();
     	if ((aim.isDead() || aam.isDead()) && !asa.isDying) {
     		aim.setDead();
     		ArmorStandUtils.removeEntitySync(asa.getArmorStand());
     		asa.remove();
     	} else {
-    		if (!aim.getLivingEntity().hasPotionEffect(PotionEffectType.INVISIBILITY)) ArmorStandUtils.applyInvisible(aim, 0L);
+    		if (!entity.hasPotionEffect(PotionEffectType.INVISIBILITY)) ArmorStandUtils.applyInvisible(aim, 0L);
 			int check = ArmorStandAnimator.checkMovement(asa);
 			if (check==1) {
 				aam.signalMob(null, "MOVESTART");
@@ -157,7 +159,7 @@ public class ArmorStandAnimator {
 					if(aim.getThreatTable().size()>0) {
 						l=ArmorStandUtils.lookAt(asa.armorStand.getLocation(),aim.getThreatTable().getTopThreatHolder().getBukkitEntity().getLocation());
 					} else {
-						Location ll = ArmorStandUtils.getTargetBlock(aim.getLivingEntity(), 10);
+						Location ll = ArmorStandUtils.getTargetBlock(entity, 10);
 						if (ll!=null) {
 							l=ArmorStandUtils.lookAt(asa.armorStand.getLocation(),ll);
 						}
@@ -166,7 +168,7 @@ public class ArmorStandAnimator {
 					l=ArmorStandUtils.lookAt(asa.armorStand.getLocation(),aim.getEntity().getTarget().getBukkitEntity().getLocation());
 				}
 			} else {
-				Location ll = ArmorStandUtils.getTargetBlock(aim.getLivingEntity(), 10);
+				Location ll = ArmorStandUtils.getTargetBlock(entity, 10);
 				if (ll!=null) {
 					l=ArmorStandUtils.lookAt(asa.armorStand.getLocation(),ll);
 				}
@@ -253,17 +255,19 @@ public class ArmorStandAnimator {
 	
 	private void createAIMob() {
 		this.aiMob = MythicMobs.inst().getMobManager().spawnMob(this.aiMobName, this.armorStand.getLocation());
+		LivingEntity entity=(LivingEntity)aiMob.getEntity().getBukkitEntity();
 		ArmorStandUtils.applyInvisible(this.aiMob, 5L);
 		String ulow = armorStand.getUniqueId().toString().substring(0, armorStand.getUniqueId().toString().length()/2);
 		String uhigh = armorStand.getUniqueId().toString().substring(armorStand.getUniqueId().toString().length()/2, armorStand.getUniqueId().toString().length());
-        aiMob.getLivingEntity().setMetadata("aiMob", new FixedMetadataValue(AnimatorStands.inst(),ulow));
-        aiMob.getLivingEntity().setMetadata("aiMob1", new FixedMetadataValue(AnimatorStands.inst(),uhigh));
+        entity.setMetadata("aiMob", new FixedMetadataValue(AnimatorStands.inst(),ulow));
+        entity.setMetadata("aiMob1", new FixedMetadataValue(AnimatorStands.inst(),uhigh));
 		Bukkit.getScheduler().runTaskLater(AnimatorStands.inst(), new Runnable() {
 			@Override
 			public void run() {
 				ActiveMob aim = aiMob;
 				if (aim!=null) {
-					aim.getLivingEntity().setCanPickupItems(false);
+					LivingEntity entity=(LivingEntity)aim.getEntity().getBukkitEntity();
+					entity.setCanPickupItems(false);
 				}
 			}
 		}, 15);

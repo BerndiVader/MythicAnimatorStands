@@ -2,6 +2,8 @@
 
 ## [DOWNLOAD](http://mc.hackerzlair.org:8080/job/MythicAnimatorStands/) [![Build Status](http://mc.hackerzlair.org:8080/job/MythicAnimatorStands/badge/icon)] <br>
 
+**20.03.2020 update 0.490: update to MythicMobs 4.9.0
+#####
 **06.02.2019 update 0.471: moved project to gradle.
 **17.10.2018 update 0.470a: added 1.13.x support.
 #####

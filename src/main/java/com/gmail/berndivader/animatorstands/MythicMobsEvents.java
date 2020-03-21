@@ -166,7 +166,8 @@ public class MythicMobsEvents implements Listener {
 				EntityDamageByEntityEvent ee = (EntityDamageByEntityEvent) e;
 				AbstractEntity attacker = this.getAttacker(ee.getDamager());
 				if (!attacker.isPlayer()) {
-					asa.aiMob.getLivingEntity().damage(e.getDamage(), ee.getDamager());
+					LivingEntity entity=(LivingEntity)asa.aiMob.getEntity().getBukkitEntity();
+					entity.damage(e.getDamage(), ee.getDamager());
 				}
 			}
 		}

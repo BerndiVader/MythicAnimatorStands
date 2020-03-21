@@ -171,7 +171,7 @@ public class ArmorStandUtils {
 
 	public static void applyInvisible(ActiveMob am, long runlater) {
 		PotionEffect pe = new PotionEffect(PotionEffectType.INVISIBILITY, 2073600, 4, false, false);
-		LivingEntity le = am.getLivingEntity();
+		LivingEntity le = (LivingEntity)am.getEntity().getBukkitEntity();
 		pe.apply(le);
 		new BukkitRunnable() {
 			@Override
