@@ -2,6 +2,7 @@ package com.gmail.berndivader.animatorstands.conditions;
 
 import com.gmail.berndivader.animatorstands.ArmorStandAnimator;
 import com.gmail.berndivader.animatorstands.ArmorStandUtils;
+import com.gmail.berndivader.animatorstands.RangedDouble;
 
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
@@ -9,12 +10,11 @@ import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.skills.SkillCondition;
 import io.lumine.xikage.mythicmobs.skills.conditions.ConditionAction;
 import io.lumine.xikage.mythicmobs.skills.conditions.IEntityCondition;
-import io.lumine.xikage.mythicmobs.utils.numbers.RandomDouble;
 
 public class ArmorStandaiMobTargetDistance extends SkillCondition 
 implements
 IEntityCondition {
-	protected RandomDouble distance;
+	protected RangedDouble distance;
 	
 	public ArmorStandaiMobTargetDistance(String line, MythicLineConfig mlc) {
 		super(line);
@@ -24,7 +24,7 @@ IEntityCondition {
 			this.ACTION = ConditionAction.TRUE;
 		}
         String d = mlc.getString(new String[]{"distance", "d"},"5");
-        this.distance = new RandomDouble(d);
+        this.distance = new RangedDouble(d);
 	}
 
 	@Override
