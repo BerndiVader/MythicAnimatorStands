@@ -35,8 +35,8 @@ import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
 import io.lumine.xikage.mythicmobs.skills.targeters.ConsoleTargeter;
 import io.lumine.xikage.mythicmobs.skills.targeters.IEntitySelector;
 import io.lumine.xikage.mythicmobs.skills.targeters.ILocationSelector;
-import io.lumine.xikage.mythicmobs.skills.targeters.MTTriggerLocation;
 import io.lumine.xikage.mythicmobs.skills.targeters.OriginTargeter;
+import io.lumine.xikage.mythicmobs.skills.targeters.TriggerLocationTargeter;
 
 public class ArmorStandAnimator {
 	private static Map<String, Frame[]> animCache = new HashMap<String, Frame[]>();
@@ -100,7 +100,7 @@ public class ArmorStandAnimator {
                 ((ILocationSelector)targeter).filter(data);
             } else if (targeter instanceof OriginTargeter) {
                 data.setLocationTargets(((OriginTargeter)targeter).getLocation(data.getOrigin()));
-            } else if (targeter instanceof MTTriggerLocation) {
+            } else if (targeter instanceof TriggerLocationTargeter) {
                 HashSet<AbstractLocation> lTargets = new HashSet<AbstractLocation>();
                 lTargets.add(data.getTrigger().getLocation());
                 data.setLocationTargets(lTargets);

@@ -70,6 +70,7 @@ public class ArmorStandUtils {
 		};
 		try {
 			File f = new File(MythicMobs.inst().getDataFolder()+"/Anims", file);
+			System.err.println(f.getAbsoluteFile().getName());
 			asa = new ArmorStandAnimator(f, as, animSpeed, oi, mobtype);
 			asa.setStartLocation(as.getLocation());
 			as.setBasePlate(base);

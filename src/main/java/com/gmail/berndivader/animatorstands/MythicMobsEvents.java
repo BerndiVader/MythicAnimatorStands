@@ -175,7 +175,7 @@ public class MythicMobsEvents implements Listener {
 
     @EventHandler
     public void onInteractTrigger(PlayerInteractAtEntityEvent e) {
-        if (MythicMobs.inst().getMinecraftVersion() >= 9 && e.getHand() != EquipmentSlot.HAND) {
+        if (e.getHand() != EquipmentSlot.HAND) {
             return;
         }
         Entity l = e.getRightClicked();
