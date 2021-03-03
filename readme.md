@@ -1,6 +1,6 @@
 # AnimatorStands 4 MythicMobs
 
-## [DOWNLOAD](http://mc.hackerzlair.org:8080/job/MythicAnimatorStands/) [![Build Status](http://mc.hackerzlair.org:8080/job/MythicAnimatorStands/badge/icon)] <br>
+## [DOWNLOAD](https://mc.hackerzlair.org/jenkins/job/MythicAnimatorStands/) [![Build Status](https://mc.hackerzlair.org/jenkins/job/MythicAnimatorStands/badge/icon)] <br>
 
 **18.09.2020 update 0.492: update to MythicMobs 4.10.0 free.
 **08.04.2020 update 0.491: fixed exception in aimob range condition
